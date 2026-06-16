@@ -1,34 +1,57 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink } from "react-router-dom";
 
 const BusinessNavbar = () => {
   return (
-    <div className='col-md-2 sol-sm-2'>
-              <div className='alert alert-info'>
-                <h4>Business Account</h4>
-              <ul className='nav'>
-                <li className='nav-item'>
-                  <NavLink to="/business/myaccount" className='nav-link'>My Account</NavLink>
-                </li>
-                 <li className='nav-item'>
-                  <NavLink to="/business/myturf" className='nav-link'>My Turf</NavLink>
-                </li>
-                 <li className='nav-item'>
-                  <NavLink to="/business/addturf" className='nav-link'>Add Turfs</NavLink>
-                </li>
-                 <li className='nav-item'>
-                  <NavLink to="/business/allbooking" className='nav-link'>All Turf Booking</NavLink>
-                </li>
-                 <li className='nav-item'>
-                  <NavLink to="/business/myprofile" className='nav-link'>My Profile</NavLink>
-                </li>
-                 <li className='nav-item'>
-                  <NavLink to="/business/logout" className='nav-link'>Logout</NavLink>
-                </li>
-              </ul>
-              </div>
-            </div>
-  )
-}
+    <div className="col-md-3 col-lg-2">
+      <nav className="dash-sidebar">
+        <h4>Business Account</h4>
+        <ul>
+          <li>
+            <NavLink to="/business/myaccount" end>
+              <i className="fa fa-gauge-high"></i>
+              Dashboard
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/business/myturf">
+              <i className="fa fa-futbol"></i>
+              My Turfs
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/business/addturf">
+              <i className="fa fa-circle-plus"></i>
+              Add Turf
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/business/allbooking">
+              <i className="fa fa-receipt"></i>
+              All Bookings
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/business/myprofile">
+              <i className="fa fa-user"></i>
+              My Profile
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/business/updateprofile">
+              <i className="fa fa-pen-to-square"></i>
+              Edit Profile
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/business/logout">
+              <i className="fa fa-right-from-bracket"></i>
+              Logout
+            </NavLink>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  );
+};
 
-export default BusinessNavbar
+export default BusinessNavbar;

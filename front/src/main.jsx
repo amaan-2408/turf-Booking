@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './styles/modern.css'
 import './styles/auth.css'
+import './styles/dashboard.css'
 
 import App from './App.jsx'
 

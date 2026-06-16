@@ -1,28 +1,45 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink } from "react-router-dom";
 
 const UserNavbar = () => {
   return (
-     <div className='col-md-2'>
-              <div className='alert alert-info'>
-                <h4>Your Account</h4>
-              <ul className='nav'>
-                <li className='nav-item'>
-                  <NavLink to="/user/myaccount" className='nav-link'>My Account</NavLink>
-                </li>
-                 <li className='nav-item'>
-                  <NavLink to="/user/myprofile" className='nav-link'>My Profile</NavLink>
-                </li>
-                 <li className='nav-item'>
-                  <NavLink to="/user/mybooking" className='nav-link'>My Booking</NavLink>
-                </li>
-                 <li className='nav-item'>
-                  <NavLink to="/user/logout" className='nav-link'>Logout</NavLink>
-                </li>
-              </ul>
-              </div>
-            </div>
-  )
-}
+    <div className="col-md-3 col-lg-2">
+      <nav className="dash-sidebar">
+        <h4>Your Account</h4>
+        <ul>
+          <li>
+            <NavLink to="/user/myaccount" end>
+              <i className="fa fa-gauge-high"></i>
+              Dashboard
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/user/mybooking">
+              <i className="fa fa-calendar-check"></i>
+              My Bookings
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/user/myprofile">
+              <i className="fa fa-user"></i>
+              My Profile
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/user/updateprofile">
+              <i className="fa fa-pen-to-square"></i>
+              Edit Profile
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/user/logout">
+              <i className="fa fa-right-from-bracket"></i>
+              Logout
+            </NavLink>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  );
+};
 
-export default UserNavbar
+export default UserNavbar;
