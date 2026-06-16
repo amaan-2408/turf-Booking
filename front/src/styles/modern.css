@@ -1,0 +1,443 @@
+  /* ============================================                                                                                                                                             
+     MODERN DESIGN SYSTEM                                                                                                                                                                     
+     - Override Bootstrap defaults                                                                                                                                                            
+     - Use CSS variables for easy theming                                                                                                                                                     
+     - Sport-friendly palette (emerald + amber)                                                                                                                                               
+     ============================================ */                                                                                                                                          
+                                                                                                                                                                                              
+  :root {                                                                                                                                                                                     
+    /* ============ COLORS ============ */                                                                                                                                                    
+    --color-primary: #10b981;          /* Emerald 500 - sport, action */                                                                                                                      
+    --color-primary-dark: #059669;     /* Emerald 600 */                                                                                                                                      
+    --color-primary-light: #d1fae5;    /* Emerald 100 */                                                                                                                                      
+    --color-secondary: #0f172a;        /* Slate 900 */                                                                                                                                        
+    --color-accent: #f59e0b;           /* Amber 500 - CTAs */                                                                                                                                 
+                                                                                                                                                                                              
+    --color-bg: #ffffff;                                                                                                                                                                      
+    --color-surface: #f8fafc;          /* Slate 50 */                                                                                                                                         
+    --color-surface-2: #f1f5f9;        /* Slate 100 */                                                                                                                                        
+    --color-border: #e2e8f0;           /* Slate 200 */                                                                                                                                        
+    --color-border-strong: #cbd5e1;    /* Slate 300 */                                                                                                                                        
+                                                                                                                                                                                              
+    --color-text: #0f172a;             /* Slate 900 */                                                                                                                                        
+    --color-text-muted: #64748b;       /* Slate 500 */                                                                                                                                        
+    --color-text-inverse: #ffffff;                                                                                                                                                            
+                                                                                                                                                                                              
+    --color-success: #10b981;                                                                                                                                                                 
+    --color-danger: #ef4444;                                                                                                                                                                  
+    --color-warning: #f59e0b;                                                                                                                                                                 
+    --color-info: #3b82f6;                                                                                                                                                                    
+                                                                                                                                                                                              
+    /* ============ TYPOGRAPHY ============ */                                                                                                                                                
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter',                                                                                                                      
+                 'Helvetica Neue', Arial, sans-serif;                                                                                                                                         
+    --font-display: var(--font-sans);                                                                                                                                                         
+                                                                                                                                                                                              
+    /* ============ SPACING ============ */                                                                                                                                                   
+    --space-1: 0.25rem;                                                                                                                                                                       
+    --space-2: 0.5rem;                                                                                                                                                                        
+    --space-3: 0.75rem;                                                                                                                                                                       
+    --space-4: 1rem;                                                                                                                                                                          
+    --space-5: 1.5rem;                                                                                                                                                                        
+    --space-6: 2rem;                                                                                                                                                                          
+    --space-7: 3rem;                                                                                                                                                                          
+    --space-8: 4rem;                                                                                                                                                                          
+    --space-9: 6rem;                                                                                                                                                                          
+                                                                                                                                                                                              
+    /* ============ SHADOWS ============ */                                                                                                                                                   
+    --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);                                                                                                                                            
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);                                                                                                          
+    --shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -1px rgba(15, 23, 42, 0.04);                                                                                                   
+    --shadow-md: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);                                                                                              
+    --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);                                                                                             
+    --shadow-xl: 0 25px 50px -12px rgba(15, 23, 42, 0.15);                                                                                                                                    
+                                                                                                                                                                                              
+    /* ============ RADII ============ */                                                                                                                                                     
+    --radius-sm: 0.375rem;                                                                                                                                                                    
+    --radius: 0.5rem;                                                                                                                                                                         
+    --radius-md: 0.75rem;                                                                                                                                                                     
+    --radius-lg: 1rem;                                                                                                                                                                        
+    --radius-xl: 1.5rem;                                                                                                                                                                      
+    --radius-full: 9999px;                                                                                                                                                                    
+                                                                                                                                                                                              
+    /* ============ TRANSITIONS ============ */                                                                                                                                               
+    --transition-fast: all 0.15s ease;                                                                                                                                                        
+    --transition: all 0.2s ease;                                                                                                                                                              
+    --transition-slow: all 0.3s ease;                                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* ============================================                                                                                                                                             
+     GLOBAL RESETS                                                                                                                                                                            
+     ============================================ */                                                                                                                                          
+  * {                                                                                                                                                                                         
+    -webkit-font-smoothing: antialiased;                                                                                                                                                      
+    -moz-osx-font-smoothing: grayscale;                                                                                                                                                       
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  body {                                                                                                                                                                                      
+    font-family: var(--font-sans);                                                                                                                                                            
+    color: var(--color-text);                                                                                                                                                                 
+    background: var(--color-bg);                                                                                                                                                              
+    line-height: 1.6;                                                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  h1, h2, h3, h4, h5, h6 {                                                                                                                                                                    
+    font-family: var(--font-display);                                                                                                                                                         
+    font-weight: 700;                                                                                                                                                                         
+    letter-spacing: -0.02em;                                                                                                                                                                  
+    line-height: 1.2;                                                                                                                                                                         
+    color: var(--color-text);                                                                                                                                                                 
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  a {                                                                                                                                                                                         
+    color: var(--color-primary);                                                                                                                                                              
+    text-decoration: none;                                                                                                                                                                    
+    transition: var(--transition-fast);                                                                                                                                                       
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  a:hover {                                                                                                                                                                                   
+    color: var(--color-primary-dark);                                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* ============================================                                                                                                                                             
+     MODERN BUTTONS                                                                                                                                                                           
+     ============================================ */                                                                                                                                          
+  .btn {                                                                                                                                                                                      
+    font-weight: 600;                                                                                                                                                                         
+    padding: 0.625rem 1.5rem;                                                                                                                                                                 
+    border-radius: var(--radius);                                                                                                                                                             
+    transition: var(--transition);                                                                                                                                                            
+    border-width: 1px;                                                                                                                                                                        
+    letter-spacing: 0.01em;                                                                                                                                                                   
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .btn-sm {                                                                                                                                                                                   
+    padding: 0.4rem 1rem;                                                                                                                                                                     
+    font-size: 0.875rem;                                                                                                                                                                      
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .btn-lg {                                                                                                                                                                                   
+    padding: 0.875rem 2rem;                                                                                                                                                                   
+    font-size: 1.0625rem;                                                                                                                                                                     
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .btn-primary {                                                                                                                                                                              
+    background: var(--color-primary);                                                                                                                                                         
+    border-color: var(--color-primary);                                                                                                                                                       
+    color: var(--color-text-inverse);                                                                                                                                                         
+    box-shadow: var(--shadow-xs);                                                                                                                                                             
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .btn-primary:hover,                                                                                                                                                                         
+  .btn-primary:focus {                                                                                                                                                                        
+    background: var(--color-primary-dark);                                                                                                                                                    
+    border-color: var(--color-primary-dark);                                                                                                                                                  
+    color: var(--color-text-inverse);                                                                                                                                                         
+    transform: translateY(-1px);                                                                                                                                                              
+    box-shadow: var(--shadow);                                                                                                                                                                
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .btn-secondary {                                                                                                                                                                            
+    background: var(--color-secondary);                                                                                                                                                       
+    border-color: var(--color-secondary);                                                                                                                                                     
+    color: var(--color-text-inverse);                                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .btn-secondary:hover {                                                                                                                                                                      
+    background: #1e293b;                                                                                                                                                                      
+    border-color: #1e293b;                                                                                                                                                                    
+    color: var(--color-text-inverse);                                                                                                                                                         
+    transform: translateY(-1px);                                                                                                                                                              
+    box-shadow: var(--shadow);                                                                                                                                                                
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .btn-outline-light {                                                                                                                                                                        
+    border: 2px solid rgba(255, 255, 255, 0.3);                                                                                                                                               
+    color: var(--color-text-inverse);                                                                                                                                                         
+    background: rgba(255, 255, 255, 0.05);                                                                                                                                                    
+    backdrop-filter: blur(8px);                                                                                                                                                               
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .btn-outline-light:hover {                                                                                                                                                                  
+    background: rgba(255, 255, 255, 0.15);                                                                                                                                                    
+    border-color: rgba(255, 255, 255, 0.5);                                                                                                                                                   
+    color: var(--color-text-inverse);                                                                                                                                                         
+    transform: translateY(-1px);                                                                                                                                                              
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* ============================================                                                                                                                                             
+     MODERN CARDS                                                                                                                                                                             
+     ============================================ */                                                                                                                                          
+  .card {                                                                                                                                                                                     
+    border: 1px solid var(--color-border);                                                                                                                                                    
+    border-radius: var(--radius-md);                                                                                                                                                          
+    background: var(--color-bg);                                                                                                                                                              
+    box-shadow: var(--shadow-sm);                                                                                                                                                             
+    transition: var(--transition);                                                                                                                                                            
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .card:hover {                                                                                                                                                                               
+    box-shadow: var(--shadow-md);                                                                                                                                                             
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .card-header,                                                                                                                                                                               
+  .card-footer {                                                                                                                                                                              
+    background: var(--color-surface);                                                                                                                                                         
+    border-color: var(--color-border);                                                                                                                                                        
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* ============================================                                                                                                                                             
+     MODERN NAVBAR                                                                                                                                                                            
+     ============================================ */                                                                                                                                          
+  .navbar {                                                                                                                                                                                   
+    background: rgba(255, 255, 255, 0.85);                                                                                                                                                    
+    backdrop-filter: saturate(180%) blur(12px);                                                                                                                                               
+    -webkit-backdrop-filter: saturate(180%) blur(12px);                                                                                                                                       
+    border-bottom: 1px solid var(--color-border);                                                                                                                                             
+    padding: 0.875rem 0;                                                                                                                                                                      
+    transition: var(--transition);                                                                                                                                                            
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .navbar.scrolled {                                                                                                                                                                          
+    box-shadow: var(--shadow-sm);                                                                                                                                                             
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .navbar-brand {                                                                                                                                                                             
+    font-weight: 800;                                                                                                                                                                         
+    font-size: 1.375rem;                                                                                                                                                                      
+    letter-spacing: -0.03em;                                                                                                                                                                  
+    color: var(--color-text) !important;                                                                                                                                                      
+    display: flex;                                                                                                                                                                            
+    align-items: center;                                                                                                                                                                      
+    gap: 0.5rem;                                                                                                                                                                              
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .navbar-brand i,                                                                                                                                                                            
+  .navbar-brand svg {                                                                                                                                                                         
+    color: var(--color-primary);                                                                                                                                                              
+    font-size: 1.5rem;                                                                                                                                                                        
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .nav-link {                                                                                                                                                                                 
+    font-weight: 500;                                                                                                                                                                         
+    color: var(--color-text) !important;                                                                                                                                                      
+    padding: 0.5rem 0.875rem !important;                                                                                                                                                      
+    border-radius: var(--radius-sm);                                                                                                                                                          
+    transition: var(--transition-fast);                                                                                                                                                       
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .nav-link:hover {                                                                                                                                                                           
+    color: var(--color-primary) !important;                                                                                                                                                   
+    background: var(--color-surface);                                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .nav-link.active {                                                                                                                                                                          
+    color: var(--color-primary) !important;                                                                                                                                                   
+    background: var(--color-primary-light);                                                                                                                                                   
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .dropdown-menu {                                                                                                                                                                            
+    border: 1px solid var(--color-border);                                                                                                                                                    
+    border-radius: var(--radius-md);                                                                                                                                                          
+    box-shadow: var(--shadow-lg);                                                                                                                                                             
+    padding: 0.5rem;                                                                                                                                                                          
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .dropdown-item {                                                                                                                                                                            
+    border-radius: var(--radius-sm);                                                                                                                                                          
+    padding: 0.5rem 0.75rem;                                                                                                                                                                  
+    font-weight: 500;                                                                                                                                                                         
+    transition: var(--transition-fast);                                                                                                                                                       
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .dropdown-item:hover {                                                                                                                                                                      
+    background: var(--color-primary-light);                                                                                                                                                   
+    color: var(--color-primary-dark);                                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* ============================================                                                                                                                                             
+     MODERN FORMS                                                                                                                                                                             
+     ============================================ */                                                                                                                                          
+  .form-control,                                                                                                                                                                              
+  .form-select {                                                                                                                                                                              
+    border: 1.5px solid var(--color-border);                                                                                                                                                  
+    border-radius: var(--radius);                                                                                                                                                             
+    padding: 0.625rem 0.875rem;                                                                                                                                                               
+    font-size: 0.9375rem;                                                                                                                                                                     
+    transition: var(--transition);                                                                                                                                                            
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .form-control:focus,                                                                                                                                                                        
+  .form-select:focus {                                                                                                                                                                        
+    border-color: var(--color-primary);                                                                                                                                                       
+    box-shadow: 0 0 0 3px var(--color-primary-light);                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .form-label {                                                                                                                                                                               
+    font-weight: 600;                                                                                                                                                                         
+    font-size: 0.875rem;                                                                                                                                                                      
+    color: var(--color-text);                                                                                                                                                                 
+    margin-bottom: 0.375rem;                                                                                                                                                                  
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .form-control.is-invalid {                                                                                                                                                                  
+    border-color: var(--color-danger);                                                                                                                                                        
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .invalid-feedback,                                                                                                                                                                          
+  .text-danger.small {                                                                                                                                                                        
+    font-size: 0.8125rem;                                                                                                                                                                     
+    margin-top: 0.25rem;                                                                                                                                                                      
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* ============================================                                                                                                                                             
+     MODERN SECTIONS                                                                                                                                                                          
+     ============================================ */                                                                                                                                          
+  .section {                                                                                                                                                                                  
+    padding: var(--space-9) 0;                                                                                                                                                                
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .section-sm {                                                                                                                                                                               
+    padding: var(--space-7) 0;                                                                                                                                                                
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .section-title {                                                                                                                                                                            
+    text-align: center;                                                                                                                                                                       
+    max-width: 720px;                                                                                                                                                                         
+    margin: 0 auto var(--space-7);                                                                                                                                                            
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .section-eyebrow {                                                                                                                                                                          
+    display: inline-block;                                                                                                                                                                    
+    font-size: 0.8125rem;                                                                                                                                                                     
+    font-weight: 700;                                                                                                                                                                         
+    letter-spacing: 0.1em;                                                                                                                                                                    
+    text-transform: uppercase;                                                                                                                                                                
+    color: var(--color-primary);                                                                                                                                                              
+    margin-bottom: var(--space-3);                                                                                                                                                            
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .section-title h2 {                                                                                                                                                                         
+    font-size: clamp(1.875rem, 4vw, 2.75rem);                                                                                                                                                 
+    font-weight: 800;                                                                                                                                                                         
+    margin-bottom: var(--space-3);                                                                                                                                                            
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .section-title p {                                                                                                                                                                          
+    color: var(--color-text-muted);                                                                                                                                                           
+    font-size: 1.0625rem;                                                                                                                                                                     
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* ============================================                                                                                                                                             
+     MODERN FOOTER                                                                                                                                                                            
+     ============================================ */                                                                                                                                          
+  .footer {                                                                                                                                                                                   
+    background: var(--color-secondary);                                                                                                                                                       
+    color: rgba(255, 255, 255, 0.8);                                                                                                                                                          
+    padding: var(--space-8) 0 var(--space-5);                                                                                                                                                 
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .footer h3,                                                                                                                                                                                 
+  .footer h4 {                                                                                                                                                                                
+    color: var(--color-text-inverse);                                                                                                                                                         
+    font-weight: 700;                                                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .footer a {                                                                                                                                                                                 
+    color: rgba(255, 255, 255, 0.75);                                                                                                                                                         
+    display: inline-flex;                                                                                                                                                                     
+    align-items: center;                                                                                                                                                                      
+    gap: 0.5rem;                                                                                                                                                                              
+    padding: 0.25rem 0;                                                                                                                                                                       
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .footer a:hover {                                                                                                                                                                           
+    color: var(--color-primary);                                                                                                                                                              
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .footer .brand-icon {                                                                                                                                                                       
+    color: var(--color-primary);                                                                                                                                                              
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* ============================================                                                                                                                                             
+     UTILITIES                                                                                                                                                                                
+     ============================================ */                                                                                                                                          
+  .eyebrow {                                                                                                                                                                                  
+    display: inline-block;                                                                                                                                                                    
+    font-size: 0.8125rem;                                                                                                                                                                     
+    font-weight: 700;                                                                                                                                                                         
+    letter-spacing: 0.1em;                                                                                                                                                                    
+    text-transform: uppercase;                                                                                                                                                                
+    color: var(--color-primary);                                                                                                                                                              
+    margin-bottom: var(--space-3);                                                                                                                                                            
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .text-muted-modern {                                                                                                                                                                        
+    color: var(--color-text-muted);                                                                                                                                                           
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .bg-surface {                                                                                                                                                                               
+    background: var(--color-surface);                                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .shadow-modern {                                                                                                                                                                            
+    box-shadow: var(--shadow);                                                                                                                                                                
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .shadow-modern-lg {                                                                                                                                                                         
+    box-shadow: var(--shadow-lg);                                                                                                                                                             
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .rounded-modern {                                                                                                                                                                           
+    border-radius: var(--radius-md);                                                                                                                                                          
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .rounded-modern-lg {                                                                                                                                                                        
+    border-radius: var(--radius-lg);                                                                                                                                                          
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* Loading skeleton */                                                                                                                                                                      
+  @keyframes shimmer {                                                                                                                                                                        
+    0% { background-position: -1000px 0; }                                                                                                                                                    
+    100% { background-position: 1000px 0; }                                                                                                                                                   
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  .skeleton {                                                                                                                                                                                 
+    background: linear-gradient(                                                                                                                                                              
+      90deg,                                                                                                                                                                                  
+      var(--color-surface) 0%,                                                                                                                                                                
+      var(--color-surface-2) 50%,                                                                                                                                                             
+      var(--color-surface) 100%                                                                                                                                                               
+    );                                                                                                                                                                                        
+    background-size: 1000px 100%;                                                                                                                                                             
+    animation: shimmer 2s infinite;                                                                                                                                                           
+    border-radius: var(--radius);                                                                                                                                                             
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* Smooth scroll */                                                                                                                                                                         
+  html {                                                                                                                                                                                      
+    scroll-behavior: smooth;                                                                                                                                                                  
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* Container max-width tweak */                                                                                                                                                             
+  .container,                                                                                                                                                                                 
+  .container-lg,                                                                                                                                                                              
+  .container-md,                                                                                                                                                                              
+  .container-sm,                                                                                                                                                                              
+  .container-xl,                                                                                                                                                                              
+  .container-xxl {                                                                                                                                                                            
+    max-width: 1280px;                                                                                                                                                                        
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* Focus rings */                                                                                                                                                                           
+  :focus-visible {                                                                                                                                                                            
+    outline: 2px solid var(--color-primary);                                                                                                                                                  
+    outline-offset: 2px;                                                                                                                                                                      
+    border-radius: var(--radius-sm);                                                                                                                                                          
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  /* Selection color */                                                                                                                                                                       
+  ::selection {                                                                                                                                                                               
+    background: var(--color-primary-light);                                                                                                                                                   
+    color: var(--color-secondary);                                                                                                                                                            
+  }   
