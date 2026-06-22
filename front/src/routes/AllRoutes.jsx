@@ -15,6 +15,7 @@ import MyTurf from '../pages/business/MyTurf'
 import BusinessMyAccount from '../pages/business/BusinessMyAccount'
 import AddTurfs from '../pages/business/AddTurfs'
 import Turfs from '../pages/Turfs'
+import TurfsListing from '../pages/TurfListing'
 import MyBooking from '../pages/user/MyBooking'
 import MyProfile from '../pages/user/MyProfile'
 import MyTurfBooking from '../pages/business/MyTurfBooking'
@@ -31,6 +32,7 @@ const AllRoutes = () => {
     <Route path='/' element={<Home/>} />
     <Route path='/about' element={<About/>} />
     <Route path='/turfs/:id' element={<Turfs/>} />
+    <Route path='/turfs' element={<TurfsListing/>} />
     <Route path='/user/login' element={<Login/>} />
     <Route path='/user/signup' element={<SignUp/>} />
 

@@ -33,7 +33,7 @@ import { useState } from 'react'
                                                                                                                                                                                               
             localStorage.setItem('user_access', response.data.token)                                                                                                                          
             localStorage.setItem('name', response.data.name)                                                                                                                                  
-            navigate('/user/myaccount')                                                                                                                                                       
+            navigate('/')                                                                                                                                                       
           })                                                                                                                                                                                  
           .catch(() => {                                                                                                                                                                      
             setErrMsg('Could not reach the server. Please try again.')                                                                                                                        
