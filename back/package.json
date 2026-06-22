@@ -21,6 +21,7 @@
     "mongoose": "^8.17.1",
     "nodemon": "^3.1.14",
     "sha1": "^1.1.1",
+    "stripe": "^22.2.2",
     "unique-string": "^3.0.0"
   }
 }

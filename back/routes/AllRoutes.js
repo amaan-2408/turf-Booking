@@ -5,6 +5,7 @@ import BusinessRoutes from "./BusinessRoutes.js";
 import UserAuthRoutes from "./UserAuthRoutes.js";
 import BusinessAuthRoutes from "./BusinessAuthRoutes.js"
 import BookingRoutes from "./BookingRoutes.js"
+import PaymentRoutes from "./PaymentRoutes.js"
 
 const routes=express.Router();
 
@@ -16,4 +17,5 @@ routes.use("/api/v1/booking",BookingRoutes)
 
 routes.use("/api/v1/business",BusinessRoutes)
 routes.use("/api/v1/business/auth",BusinessAuthRoutes)
+routes.use("/api/v1/payment", PaymentRoutes);
 export default routes
