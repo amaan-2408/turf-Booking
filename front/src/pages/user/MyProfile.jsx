@@ -1,116 +1,235 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
-import { NavLink } from "react-router-dom";
 import { API_URL } from "../../config/Api";
 
 const MyProfile = () => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     axios
       .get(`${API_URL}/user/myprofile`, {
         headers: { Authorization: localStorage.getItem("user_access") },
       })
-      .then((response) =>{
-         
-         console.log(response.data)
-         setUser(response.data)
-      }
-        )    
+      .then((response) => {
+        setUser(response.data || {});
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setError("Could not load your profile.");
+        setIsLoading(false);
+      });
   }, []);
 
-  return (
-    <div
-      className="container-fluid"
-      style={{ backgroundColor: "#f8f9fa", minHeight: "100vh", padding: "2rem" }}
-    >
-      <h4 className="mb-4 text-center" style={{ fontWeight: 600 }}>
-        My Profile
-      </h4>
+  // Get initials from name for avatar fallback
+  const initials = (user?.name || "?")
+    .split(" ")
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
-      <div className="row justify-content-center">
-        <div className="col-xl-6 col-lg-8 col-md-10">
+  return (
+    <main className="dashboard-page">
+      <div className="container">
+        <div className="dashboard-header">
+          <div>
+            <h1>My profile</h1>
+            <p>Your account details at a glance.</p>
+          </div>
+          <Link to="/user/updateprofile" className="btn btn-primary">
+            <i className="fa fa-pen-to-square me-2"></i>Edit profile
+          </Link>
+        </div>
+
+        {/* Loading */}
+        {isLoading && (
           <div
-            className="card shadow-sm"
-            style={{ borderRadius: "1rem", overflow: "hidden", border: "none" }}
+            className="dashboard-panel"
+            style={{ maxWidth: "720px", margin: "0 auto" }}
           >
-            {/* Header */}
+            <div className="d-flex align-items-center gap-4 mb-4">
+              <div
+                className="skeleton"
+                style={{ width: 96, height: 96, borderRadius: "50%" }}
+              ></div>
+              <div className="flex-grow-1">
+                <div
+                  className="skeleton skeleton-box w-50 mb-2"
+                  style={{ height: 20 }}
+                ></div>
+                <div
+                  className="skeleton skeleton-box w-30"
+                  style={{ height: 14 }}
+                ></div>
+              </div>
+            </div>
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="skeleton skeleton-box w-100 mb-3"></div>
+            ))}
+          </div>
+        )}
+
+        {/* Error */}
+        {error && !isLoading && (
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <i className="fa fa-exclamation-triangle"></i>
+            </div>
+            <h3>Couldn't load your profile</h3>
+            <p>{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="btn btn-primary"
+            >
+              Try again
+            </button>
+          </div>
+        )}
+
+        {/* Loaded */}
+        {!isLoading && !error && user && (
+          <div
+            className="dashboard-panel"
+            style={{ maxWidth: "720px", margin: "0 auto" }}
+          >
+            {/* Header with initials avatar */}
             <div
-              className="card-header text-white text-center"
               style={{
-                background: "linear-gradient(135deg, #0d6efd, #6610f2)",
-                padding: "3rem 1rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--space-4)",
+                paddingBottom: "var(--space-5)",
+                marginBottom: "var(--space-5)",
+                borderBottom: "1px solid var(--color-border)",
               }}
             >
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-
-                alt="User"
-                className="rounded-circle mb-3"
+              <div
+                aria-hidden="true"
                 style={{
-                  width: "120px",
-                  height: "120px",
-                  objectFit: "cover",
-                  border: "3px solid #fff",
+                  width: 96,
+                  height: 96,
+                  borderRadius: "50%",
+                  background:
+                    "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%)",
+                  color: "var(--color-text-inverse)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "2rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.05em",
+                  flexShrink: 0,
                 }}
-              />
-              <h5 style={{ fontWeight: 600 }}>{user.name}</h5>
-              
+              >
+                {initials}
+              </div>
+              <div>
+                <h2
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: 800,
+                    margin: "0 0 0.25rem",
+                  }}
+                >
+                  {user.name || "Unnamed user"}
+                </h2>
+                <p
+                  style={{
+                    color: "var(--color-text-muted)",
+                    fontSize: "0.9375rem",
+                    margin: 0,
+                  }}
+                >
+                  <i className="fa fa-user me-2"></i>Player account
+                </p>
+              </div>
             </div>
 
-            {/* Body */}
-            <div className="card-body p-4">
-              <div className="row mb-3">
-                <div className="col-sm-4">
-                  <p style={{ fontWeight: 600 }}>Phone</p>
-                </div>
-                <div className="col-sm-8 text-secondary">
-                  {user.contact}
-                </div>
-              </div>
-
-              <div className="row mb-3">
-                <div className="col-sm-4">
-                  <p style={{ fontWeight: 600 }}>Email Id</p>
-                </div>
-                <div className="col-sm-8 text-secondary">
-                  {user.email}
-                </div>
-              </div>
-
-              
-
-              <div className="row mb-3">
-                <div className="col-sm-4">
-                  <p style={{ fontWeight: 600 }}>Address</p>
-                </div>
-                <div className="col-sm-8 text-secondary">
-                  {user.address}
-                </div>
-              </div>
-
-              <div className="text-center mt-4 d-flex justify-content-center gap-3 flex-wrap">
-                <NavLink
-                to="/user/updateprofile"
-                  className="btn btn-primary px-4"
-                  style={{ borderRadius: "20px", fontWeight: 500 }}
-                >
-                  Edit Profile
-                </NavLink>
-                 <NavLink 
-                  className="btn btn-primary px-4"
-                  style={{ borderRadius: "20px", fontWeight: 500 }}
-                >
-                  Change Password
-                </NavLink>
-                
-              </div>
+            {/* Fields */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "var(--space-4)",
+              }}
+            >
+              <ProfileField
+                icon="fa-envelope"
+                label="Email"
+                value={user.email}
+              />
+              <ProfileField
+                icon="fa-phone"
+                label="Phone"
+                value={user.contact}
+              />
+              <ProfileField
+                icon="fa-location-dot"
+                label="Address"
+                value={user.address}
+              />
             </div>
           </div>
-        </div>
+        )}
       </div>
-    </div>
+    </main>
   );
 };
+
+const ProfileField = ({ icon, label, value }) => (
+  <div
+    style={{
+      display: "flex",
+      alignItems: "flex-start",
+      gap: "var(--space-3)",
+      padding: "var(--space-3)",
+      borderRadius: "var(--radius)",
+      background: "var(--color-surface)",
+    }}
+  >
+    <div
+      style={{
+        width: 36,
+        height: 36,
+        borderRadius: "var(--radius-sm)",
+        background: "var(--color-primary-light)",
+        color: "var(--color-primary)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}
+    >
+      <i className={`fa ${icon}`}></i>
+    </div>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div
+        style={{
+          fontSize: "0.75rem",
+          fontWeight: 600,
+          color: "var(--color-text-muted)",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          marginBottom: "0.125rem",
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontWeight: 500,
+          wordBreak: "break-word",
+        }}
+      >
+        {value || (
+          <span style={{ color: "var(--color-text-muted)" }}>Not set</span>
+        )}
+      </div>
+    </div>
+  </div>
+);
 
 export default MyProfile;
