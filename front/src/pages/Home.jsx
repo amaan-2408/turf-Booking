@@ -1,85 +1,130 @@
-
-import React ,{useState,useEffect} from 'react'
-import Features from '../components/Features'
-import Testimonial from "../components/Testimonial"
-import axios from "axios"
-import { NavLink } from 'react-router-dom'
-import TurfCardView from '../ui/TurfCardView'
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { API_URL } from "../config/Api";
+import Features from "../components/Features";
+import Testimonial from "../components/Testimonial";
+import TurfCardView from "../ui/TurfCardView";
 
 const Home = () => {
-  let [allTurf,setAllTurf]=useState([])
-  useEffect(()=>{
+  const [allTurf, setAllTurf] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
     axios
-    .get("http://localhost:3000/api/v1/turfs")
-    .then(response=>{
-      setAllTurf(response.data)
-    })
-
-  },[])
-
+      .get(`${API_URL}/turfs`)
+      .then((response) => {
+        setAllTurf(response.data || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setError("Could not load turfs. Make sure the backend is running.");
+        setIsLoading(false);
+      });
+  }, []);
 
   return (
     <>
-    {/* Blog Start */}
-    {/* <div style={{marginTop:"100px"}}>
-      <div className="container-fluid blog pb-5">
-        <div className="container pb-5">
-          <div className="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style={{ maxWidth: '800px' }}>
-            <h4 className="text-uppercase text-primary">Turf</h4>
-            <h1 className="display-3 text-capitalize mb-3">Latest Turf</h1>
+      {/* ===== Latest Turfs Section ===== */}
+      <section className="section">
+        <div className="container">
+          {/* Section header */}
+          <div className="section-title">
+            <span className="eyebrow">Browse</span>
+            <h2>Latest turfs near you</h2>
+            <p>
+              Premium facilities ready to book. Pick your slot, pay online, show
+              up and play.
+            </p>
           </div>
 
-          <div className="row g-4 justify-content-center">
-            {
-              allTurf.map(item=>{
-                    return(
-                       <div className="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.2s">
-               <div className="blog-item">
-                <div className="blog-img">
-                  <img src={"http://localhost:3000/images/"+item.img} className="img-fluid rounded-top w-100" alt="" />
-                  <div className="blog-date px-4 py-2">&#8377;{item.price.toFixed(2)}</div>
+          {/* Loading state */}
+          {isLoading && (
+            <div className="row g-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="col-lg-4 col-md-6">
+                  <div className="card h-100">
+                    <div
+                      className="skeleton"
+                      style={{
+                        height: 220,
+                        borderRadius: "var(--radius-md) var(--radius-md) 0 0",
+                      }}
+                    ></div>
+                    <div className="card-body">
+                      <div className="skeleton skeleton-box w-60 mb-3"></div>
+                      <div className="skeleton skeleton-box w-80 mb-2"></div>
+                      <div className="skeleton skeleton-box w-40"></div>
+                    </div>
+                  </div>
                 </div>
-                <div className="blog-content rounded-bottom p-4">
-                  <a href="#" className="h4 d-inline-block mb-3">{item.title}</a>
-                  <p><i class="fas fa-location-arrow"></i> {item.adress}</p>
-                  <button className="btn btn-secondary">book now</button>
-                </div>
-              </div> 
+              ))}
             </div>
-                    )
-            })
-          }
-           
-          </div>
-         
+          )}
+
+          {/* Error state */}
+          {error && !isLoading && (
+            <div className="empty-state">
+              <div className="empty-state-icon">
+                <i className="fa fa-exclamation-triangle"></i>
+              </div>
+              <h3>Couldn't load turfs</h3>
+              <p>{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="btn btn-primary"
+              >
+                Try again
+              </button>
+            </div>
+          )}
+
+          {/* Loaded but empty */}
+          {!isLoading && !error && allTurf.length === 0 && (
+            <div className="empty-state">
+              <div className="empty-state-icon">
+                <i className="fa fa-futbol"></i>
+              </div>
+              <h3>No turfs yet</h3>
+              <p>
+                Be the first to list your facility. Once businesses add turfs,
+                they'll show up here.
+              </p>
+              <Link to="/business/register" className="btn btn-primary">
+                List your turf
+              </Link>
+            </div>
+          )}
+
+          {/* Loaded with turfs */}
+          {!isLoading && !error && allTurf.length > 0 && (
+            <>
+              <div className="row g-4">
+                {allTurf.map((item) => (
+                  <TurfCardView key={item._id} item={item} />
+                ))}
+              </div>
+
+              <div
+                className="text-center"
+                style={{ marginTop: "var(--space-6)" }}
+              >
+                <Link to="/turfs" className="btn btn-outline-primary btn-lg">
+                  <i className="fa fa-th-large me-2"></i>
+                  Browse all turfs
+                </Link>
+              </div>
+            </>
+          )}
         </div>
-      </div>
-      </div> */}
-     <div style={{marginTop:"100px"}}>
-  <div className="container-fluid blog pb-5">
-    <div className="container pb-5">
-      <div className="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style={{ maxWidth: '800px' }}>
-        <h4 className="text-uppercase text-primary">Turf</h4>
-        <h1 className="display-3 text-capitalize mb-3">Latest Turf</h1>
-      </div>
+      </section>
 
-      <div className="row g-4 justify-content-center">
-        {
-          allTurf.map(item => {
-            return (
-              <TurfCardView item={item} />
-            )
-          })
-        }
-      </div>
-    </div>
-  </div>
-</div>
-      {/* Blog End */}
-      <Features/>
-      <Testimonial/>
+      {/* ===== Existing sub-sections (unchanged) ===== */}
+      <Features />
+      <Testimonial />
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

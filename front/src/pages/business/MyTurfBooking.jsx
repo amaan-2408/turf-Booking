@@ -1,115 +1,162 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { NavLink, useNavigate } from 'react-router-dom'
-import { API_URL } from "../../config/Api";
-
-import { useParams } from 'react-router-dom'
-
-const MyTurfBooking = () => {
-    const [bookings, setBookings] = useState([]);
-  let param=useParams();
-  let id=param.id;
-
-  useEffect(() => {
-    axios
-      .get(`${API_URL}/booking/getbyturfid/${id}`)
-      .then((response) =>{
-         
-         console.log(response.data)
-         setBookings(response.data)
-         
-        
-      }
-        )    
-  }, []);
-  return (
-    <div
-      className="container-fluid py-4 px-4"
-      style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}
-    >
-      <h4 className="text-center mb-4" style={{ fontWeight: 600 }}>
-        {bookings.length > 0 ? bookings[0].turf_id.name : 'hello'} Bookings
-      </h4>
-
-      {bookings.length > 0 ? (
-        bookings.map((item, index) => (
-          <div
-            key={index}
-            className="card shadow-sm mb-3"
-            style={{ borderRadius: ".75rem", overflow: "hidden" }}
-          >
-            <div className="row g-0 align-items-center">
-              <div className="col-md-4">
-                <img
-                   src={"http://localhost:3000/turf_images/" + item.turf_id ? item.turf_id.image : ""}
-                  alt="Turf"
-                  className="img-fluid w-100"
-                  style={{
-                    height: "100%",
-                    objectFit: "cover",
-                    minHeight: "180px",
-                  }}
-                />
-              </div>
-              <div className="col-md-8">
-                <div className="card-body p-3">
-                  <h5 style={{ fontWeight: 600 }}>
-                    {item.turf_id ? item.turf_id.name: "Turf Name"}
-                  </h5>
-                  <p style={{ color: "#6c757d", fontSize: ".9rem" }}>
-                    {item.turf_id ? item.turf_id.address : ""}
-                  </p>
-
-                  <div className="row mt-2">
-                    <div className="col-sm-6">
-                      <p style={{ marginBottom: ".4rem" }}>
-                        <strong>Date:</strong> {item.date}
-                      </p>
-                      <p style={{ marginBottom: ".4rem" }}>
-                        <strong>Slot:</strong> {item.slot ? item.slot.join(", ") : ""}
-                      </p>
-                      <p style={{ marginBottom: ".4rem" }}>
-                        <strong>Booked By:</strong>{" "}
-                        {item.user_id ? item.user_id.name : ""}
-                      </p>
-                       <p style={{ marginBottom: ".4rem" }}>
-                        <strong>Contact Number:</strong>{" "}
-                        {item.user_id ? item.user_id.contact : ""}
-                      </p>
-                    </div>
-                    <div className="col-sm-6">
-                      <p style={{ marginBottom: ".4rem" }}>
-                        <strong>Slot Amount:</strong> ₹{item.amount}
-                      </p>
-                      <p style={{ marginBottom: ".4rem" }}>
-                        <strong>Advance Paid:</strong> ₹{item.advance_amount}
-                      </p>
-                      <p style={{ marginBottom: ".4rem" }}>
-                        <strong>Remaining:</strong> ₹{item.remaining_amount}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="d-flex justify-content-between align-items-center mt-3">
-                    
-                    <button className="btn btn-outline-danger btn-sm">
-                      Cancel Booking
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))
-      ) : (
-        <div className="alert alert-warning text-center mt-4">
-          No bookings found for this turf.
-        </div>
-      )}
-    </div>
-  
-
-  )
-}
-
-export default MyTurfBooking
+import { useEffect, useState } from 'react'                                                                                                                                                 
+  import { useParams } from 'react-router-dom'                                                                                                                                                
+  import axios from 'axios'                                                                                                                                                                   
+  import { API_URL } from '../../config/Api'                                                                                                                                                  
+                                                                                                                                                                                              
+  const isUpcoming = (date) =>                                                                                                                                                                
+    new Date(date) >= new Date(new Date().toDateString())                                                                                                                                     
+  const formatDate = (dateStr) =>                                                                                                                                                             
+    new Date(dateStr).toLocaleDateString('en-IN', {                                                                                                                                           
+      day: 'numeric',                                                                                                                                                                         
+      month: 'short',                                                                                                                                                                         
+      year: 'numeric',                                                                                                                                                                        
+    })                                                                                                                                                                                        
+                                                                                                                                                                                              
+  const MyTurfBooking = () => {                                                                                                                                                               
+    const { id } = useParams()                                                                                                                                                                
+    const [bookings, setBookings] = useState([])                                                                                                                                              
+    const [isLoading, setIsLoading] = useState(true)                                                                                                                                          
+    const [error, setError] = useState(null)                                                                                                                                                  
+                                                                                                                                                                                              
+    useEffect(() => {                                                                                                                                                                         
+      if (!id) {                                                                                                                                                                              
+        setError('Missing turf id in the URL.')                                                                                                                                               
+        setIsLoading(false)                                                                                                                                                                   
+        return                                                                                                                                                                                
+      }                                                                                                                                                                                       
+      axios                                                                                                                                                                                   
+        .get(`${API_URL}/booking/getbyturfid/${id}`)                                                                                                                                          
+        .then((response) => {                                                                                                                                                                 
+          setBookings(response.data || [])                                                                                                                                                    
+          setIsLoading(false)                                                                                                                                                                 
+        })                                                                                                                                                                                    
+        .catch(() => {                                                                                                                                                                        
+          setError('Could not load bookings for this turf.')                                                                                                                                  
+          setIsLoading(false)                                                                                                                                                                 
+        })                                                                                                                                                                                    
+    }, [id])                                                                                                                                                                                  
+                                                                                                                                                                                              
+    // Turf name from the first booking (if any)                                                                                                                                              
+    const turfName = bookings.length > 0 ? bookings[0].turf_id?.name : null                                                                                                                   
+                                                                                                                                                                                              
+    return (                                                                                                                                                                                  
+      <main className="dashboard-page">                                                                                                                                                       
+        <div className="container">                                                                                                                                                           
+          <div className="dashboard-header">                                                                                                                                                  
+            <div>                                                                                                                                                                             
+              <h1>{turfName ? `${turfName} · Bookings` : 'Turf bookings'}</h1>                                                                                                                
+              <p>All reservations for this turf.</p>                                                                                                                                          
+            </div>                                                                                                                                                                            
+          </div>                                                                                                                                                                              
+                                                                                                                                                                                              
+          <div className="dashboard-panel">                                                                                                                                                   
+            {isLoading ? (                                                                                                                                                                    
+              <div className="skeleton-list">                                                                                                                                                 
+                {[1, 2, 3].map((i) => (                                                                                                                                                       
+                  <div key={i} className="skeleton-item">                                                                                                                                     
+                    <div className="skeleton skeleton-box w-80"></div>                                                                                                                        
+                    <div>                                                                                                                                                                     
+                      <div className="skeleton skeleton-box w-60 mb-2"></div>                                                                                                                 
+                      <div className="skeleton skeleton-box w-40"></div>                                                                                                                      
+                    </div>                                                                                                                                                                    
+                    <div                                                                                                                                                                      
+                      className="skeleton skeleton-box"                                                                                                                                       
+                      style={{ width: 60, height: 24 }}                                                                                                                                       
+                    ></div>                                                                                                                                                                   
+                  </div>                                                                                                                                                                      
+                ))}                                                                                                                                                                           
+              </div>                                                                                                                                                                          
+            ) : error ? (                                                                                                                                                                     
+              <div className="empty-state">                                                                                                                                                   
+                <div className="empty-state-icon">                                                                                                                                            
+                  <i className="fa fa-exclamation-triangle"></i>                                                                                                                              
+                </div>                                                                                                                                                                        
+                <h3>Couldn't load bookings</h3>                                                                                                                                               
+                <p>{error}</p>                                                                                                                                                                
+                <button onClick={() => window.location.reload()} className="btn btn-primary">                                                                                                 
+                  Try again                                                                                                                                                                   
+                </button>                                                                                                                                                                     
+              </div>                                                                                                                                                                          
+            ) : bookings.length === 0 ? (                                                                                                                                                     
+              <div className="empty-state">                                                                                                                                                   
+                <div className="empty-state-icon">                                                                                                                                            
+                  <i className="fa fa-calendar-xmark"></i>                                                                                                                                    
+                </div>                                                                                                                                                                        
+                <h3>No bookings for this turf yet</h3>                                                                                                                                        
+                <p>                                                                                                                                                                           
+                  When customers book this turf, their reservations will appear                                                                                                               
+                  here.                                                                                                                                                                       
+                </p>                                                                                                                                                                          
+              </div>                                                                                                                                                                          
+            ) : (                                                                                                                                                                             
+              <div className="booking-list">                                                                                                                                                  
+                {bookings.map((booking, index) => {                                                                                                                                           
+                  const status = isUpcoming(booking.date) ? 'upcoming' : 'past'                                                                                                               
+                  const imageUrl = booking.turf_id?.image                                                                                                                                     
+                    ? `http://localhost:3000/turf_images/${booking.turf_id.image}`                                                                                                            
+                    : null                                                                                                                                                                    
+                                                                                                                                                                                              
+                  return (                                                                                                                                                                    
+                    <div key={index} className="booking-item">                                                                                                                                
+                      {imageUrl ? (                                                                                                                                                           
+                        <div                                                                                                                                                                  
+                          className="booking-item-thumb"                                                                                                                                      
+                          style={{ backgroundImage: `url(${imageUrl})` }}                                                                                                                     
+                          role="img"                                                                                                                                                          
+                          aria-label={booking.turf_id?.name}                                                                                                                                  
+                        />                                                                                                                                                                    
+                      ) : (                                                                                                                                                                   
+                        <div className="booking-item-thumb-fallback">                                                                                                                         
+                          <i className="fa fa-futbol"></i>                                                                                                                                    
+                        </div>                                                                                                                                                                
+                      )}                                                                                                                                                                      
+                                                                                                                                                                                              
+                      <div className="booking-item-body">                                                                                                                                     
+                        <h3>{booking.turf_id?.name || 'Turf booking'}</h3>                                                                                                                    
+                        <div className="booking-item-meta">                                                                                                                                   
+                          <span>                                                                                                                                                              
+                            <i className="fa fa-calendar"></i>                                                                                                                                
+                            {formatDate(booking.date)}                                                                                                                                        
+                          </span>                                                                                                                                                             
+                          {booking.slot && (                                                                                                                                                  
+                            <span>                                                                                                                                                            
+                              <i className="fa fa-clock"></i>                                                                                                                                 
+                              {Array.isArray(booking.slot)                                                                                                                                    
+                                ? booking.slot.join(', ')                                                                                                                                     
+                                : booking.slot}                                                                                                                                               
+                            </span>                                                                                                                                                           
+                          )}                                                                                                                                                                  
+                          {booking.user_id?.name && (                                                                                                                                         
+                            <span>                                                                                                                                                            
+                              <i className="fa fa-user"></i>                                                                                                                                  
+                              {booking.user_id.name}                                                                                                                                          
+                            </span>                                                                                                                                                           
+                          )}                                                                                                                                                                  
+                          {booking.user_id?.contact && (                                                                                                                                      
+                            <span>                                                                                                                                                            
+                              <i className="fa fa-phone"></i>                                                                                                                                 
+                              {booking.user_id.contact}                                                                                                                                       
+                            </span>                                                                                                                                                           
+                          )}                                                                                                                                                                  
+                          <span className={`badge-status ${status}`}>                                                                                                                         
+                            {status === 'upcoming' ? 'Upcoming' : 'Completed'}                                                                                                                
+                          </span>                                                                                                                                                             
+                        </div>                                                                                                                                                                
+                      </div>                                                                                                                                                                  
+                                                                                                                                                                                              
+                      <div className="booking-item-amount">                                                                                                                                   
+                        <small>Booking</small>₹                                                                                                                                               
+                        {(booking.amount || 0).toLocaleString('en-IN')}                                                                                                                       
+                      </div>                                                                                                                                                                  
+                    </div>                                                                                                                                                                    
+                  )                                                                                                                                                                           
+                })}                                                                                                                                                                           
+              </div>                                                                                                                                                                          
+            )}                                                                                                                                                                                
+          </div>                                                                                                                                                                              
+        </div>                                                                                                                                                                                
+      </main>                                                                                                                                                                                 
+    )                                                                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  export default MyTurfBooking     
