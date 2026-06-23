@@ -5,7 +5,7 @@ const Testimonial = () => {
     <div className="container-fluid testimonial pb-5">
       <div className="container pb-5">
         <div className="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style={{ maxWidth: '800px' }}>
-          <h4 className="text-uppercase text-primary">Testimonials</h4>
+          <h4 className="text-uppercase text-success">Testimonials</h4>
           <h1 className="display-3 text-capitalize mb-3">Our clients reviews.</h1>
         </div>
         <div className="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.3s">

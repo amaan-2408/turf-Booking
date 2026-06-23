@@ -1,317 +1,496 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { API_URL } from "../config/Api";
-import "./Turf.css";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import "./DatePicker.css";
-import Modal from "react-bootstrap/Modal";
-import GMap from "../ui/GMap";
-import Checkout from "../ui/Checkout";
-
-const Turfs = () => {
-  let navigate = useNavigate();
-  let [isBook, setIsBook] = useState(false);
-  let [applyBtn, setApplyBtn] = useState(false);
-  let [show, setShow] = useState(false);
-  let [turf, setTurf] = useState({});
-  let [timingLoopArr, setTimingLoopArr] = useState([]);
-  let [timingClose, setTimingClose] = useState(null);
-  let [timingOpen, setTimingOpen] = useState(null);
-  let currTime = new Date().getHours();
-  let [price, setPrice] = useState(0);
-  let [timingSlotArr, setTimingSlotArr] = useState([]);
-  let [discount, setDiscount] = useState(0);
-
-  // let [getAllBooking,setGetAllBooking] = useState([]);
-  let [dateSlotArr, setDateSlotArr] = useState([]);
-
-  let param = useParams();
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-  const [startDate, setStartDate] = useState(new Date());
-
-  let GoToLogin = () => {
-    handleClose();
-    navigate("/user/login");
-  };
-
-  let IsLoggedIn = () => {
-    if (localStorage.getItem("user_access")) {
-      setIsBook(true);
-    } else {
-      handleShow();
-    }
-  };
-
-  useEffect(() => {
-    axios.get(`${API_URL}/turfs/${param.id}`).then((response) => {
-      setTurf(response.data);
-      let time_open = response.data.time_open.split(" "); // ["00:00", "AM"]
-      let time_close = response.data.time_close.split(" "); // ["11:00", "PM"]
-
-      let time_open_hr = parseInt(time_open[0].split(":")[0]); // 12
-
-      let time_close_hr = parseInt(time_close[0].split(":")[0]); // 7
-
-      setTimingClose(time_close_hr);
-
-      setTimingOpen(time_open_hr);
-
-      if (time_open[1] == "PM") {
-        if (time_open_hr == 12) {
-          time_open_hr = 12;
-        } else {
-          time_open_hr += 12; //
-        }
-      }
-
-      if (time_close[1] == "PM") {
-        time_close_hr += 12; // 23
-        // console.log(time_close_hr)
-      }
-      let time_diff = time_close_hr - time_open_hr;
-      let timing_arr = Array.from({ length: time_diff }).fill("");
-
-      setTimingLoopArr(timing_arr); //jitna time difference hai utni length ka blank value ka array mil jayga
-    });
-  }, []);
-
-  useEffect(() => {
-    handleSlot();
-  }, []);
-
-  let handlePrice = (e) => {
-    let time = e.target.value;
-    if (e.target.checked) {
-      setTimingSlotArr((prevTime) => [...prevTime, time]);
-      setPrice(++price);
-    } else {
-      setTimingSlotArr((prevTime) => prevTime.filter((item) => item != time));
-      setPrice(--price);
-    }
-  };
-
-  let handleBook = (amount, full_amount, remain) => {
-    let turfData = {
-      turf_id: param.id,
-      date: startDate,
-      slot: timingSlotArr,
-      amount: full_amount,
-      advance_amount: amount,
-      remaining_amount: remain,
-    };
-    axios
-      .post(`${API_URL}/booking`, turfData, {
-        headers: { Authorization: localStorage.getItem("user_access") },
-      })
-      .then((response) => {
-        navigate("/user/myaccount");
-      });
-  };
-
-  let handleSlot = (date = new Date()) => {
-    setDateSlotArr([]);
-    let month =
-      date.getMonth() + 1 < 10
-        ? "0" + (date.getMonth() + 1)
-        : date.getMonth() + 1;
-    let newdate = date.getFullYear() + "-" + month + "-" + date.getDate();
-    axios
-      .get(`${API_URL}/booking/getbyturfid/${param.id}/${newdate}`)
-      .then((response) => {
-        // response.data.map(item => {
-        //   setDateSlotArr(prev => {
-        //     return [...item.slot]
-        //   })
-        // })
-        const allSlots = response.data.flatMap((item) => item.slot);
-        setDateSlotArr(allSlots);
-      });
-  };
-  const handleStripePayment = async (amount) => {
-  try {
-    const response = await axios.post(
-      `${API_URL}/payment/create-checkout-session`,
-      {
-        amount,
-      }
-    );
-
-    console.log(response.data);
-
-    window.location.href = response.data.url;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-  return (
-    <>
-      {isBook == false ? (
-        <div className="container my-5">
-          <div className="row">
-            <div className="col-md-8">
-              <div>
-                <h3>{turf.name}</h3>
-                <p>
-                  <i className="fa fa-map-marker" aria-hidden="true"></i>&nbsp;
-                  {turf.address}
-                </p>
-                <p>{turf.detail}</p>
-                <h4 className="h4 mt-4">Gallery</h4>
-                <img
-                  src={"http://localhost:3000/turf_images/" + turf.image}
-                  style={{ width: "100%", height: "450px" }}
-                  alt=""
-                />
-              </div>
-            </div>
-            <div className="col-md-4">
-              <h3>book your slot</h3>
-              <div className="card my-5">
-                <div className="card-header">Booking Date</div>
-                <div className="card-body">
-                  <DatePicker
-                    showIcon
-                    dateFormat="dd/MMM/YYYY"
-                    minDate={new Date()}
-                    selected={startDate}
-                    onChange={(date) => {
-                      setStartDate(date);
-                      handleSlot(date);
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="card my-5">
-                <div className="card-header">
-                  Booking Time ({turf.time_open}-{turf.time_close})
-                </div>
-                <div className="card-body timing-body">
-                  <ul className="ks-cboxtags">
-                    {timingLoopArr.map((item, index) => {
-                      return (
-                        <li key={index}>
-                          {timingOpen + index <= currTime &&
-                          startDate.getDate() === new Date().getDate() &&
-                          startDate.getMonth() === new Date().getMonth() &&
-                          startDate.getFullYear() ===
-                            new Date().getFullYear() ? (
-                            <>
-                              <input
-                                disabled={true}
-                                className="disabled"
-                                type="checkbox"
-                                id={"checkboxOne" + index}
-                                value="Rainbow Dash"
-                              />
-                              <label htmlFor={"checkboxOne" + index}>
-                                {timingOpen + index < 13
-                                  ? timingOpen + index
-                                  : timingOpen + index - 12}
-                                :00{timingOpen + index < 13 ? "AM" : "PM"}
-                              </label>
-                            </>
-                          ) : (
-                            <>
-                              <input
-                                className={
-                                  dateSlotArr.includes(
-                                    (timingOpen + index < 13
-                                      ? timingOpen + index
-                                      : timingOpen + index - 12) +
-                                      ":00" +
-                                      (timingOpen + index < 13 ? "AM" : "PM"),
-                                  )
-                                    ? "red"
-                                    : ""
-                                }
-                                disabled={
-                                  dateSlotArr.includes(
-                                    (timingOpen + index < 13
-                                      ? timingOpen + index
-                                      : timingOpen + index - 12) +
-                                      ":00" +
-                                      (timingOpen + index < 13 ? "AM" : "PM"),
-                                  )
-                                    ? true
-                                    : false
-                                }
-                                onChange={(e) => handlePrice(e)}
-                                type="checkbox"
-                                id={"checkboxOne" + index}
-                                value={
-                                  (timingOpen + index < 13
-                                    ? timingOpen + index
-                                    : timingOpen + index - 12) +
-                                  ":00" +
-                                  (timingOpen + index < 13 ? "AM" : "PM")
-                                }
-                              />
-                              <label htmlFor={"checkboxOne" + index}>
-                                {timingOpen + index < 13
-                                  ? timingOpen + index
-                                  : timingOpen + index - 12}
-                                :00{timingOpen + index < 13 ? "AM" : "PM"}
-                              </label>
-                            </>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </div>
-              <div className="card my-5">
-                <div className="card-header">
-                  Booking Price(&#8377;{turf.price}/hr)
-                </div>
-                <div className="card-body">
-                  Amount : {turf ? (price * turf.price).toFixed(2) : 0.0}
-                </div>
-              </div>
-              <button onClick={IsLoggedIn} className="btn btn-secondary">
-                Book Now
-              </button>
-            </div>
-          </div>
-          <div className="row">
-            <GMap lat={turf.lat} long={turf.long} />
-          </div>
-        </div>
-      ) : (
-        <Checkout
-          turf={turf}
-          startDate={startDate}
-          timingSlotArr={timingSlotArr}
-          discount={discount}
-          setDiscount={setDiscount}
-          handleBook={handleBook}
-          handleStripePayment={handleStripePayment}
-        />
-      )}
-
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Login Alert</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          If You Want To Book this Turf Slot, Then You Have To Login First
-        </Modal.Body>
-        <Modal.Footer>
-          <button onClick={GoToLogin} className="btn btn-sm btn-primary">
-            Login
-          </button>
-
-          <button onClick={handleClose} className="btn btn-sm btn-secondary">
-            Close
-          </button>
-        </Modal.Footer>
-      </Modal>
-    </>
-  );
-};
-
-export default Turfs;
+ import { useEffect, useMemo, useState } from 'react'                                                                                                                                        
+  import { useNavigate, useParams } from 'react-router-dom'                                                                                                                                   
+  import axios from 'axios'                                                                                                                                                                   
+  import DatePicker from 'react-datepicker'                                                                                                                                                   
+  import 'react-datepicker/dist/react-datepicker.css'                                                                                                                                         
+  import { API_URL } from '../config/Api'                                                                                                                                                     
+  import GMap from '../ui/GMap'                                                                                                                                                               
+  import Checkout from '../ui/Checkout'                                                                                                                                                       
+                                                                                                                                                                                              
+  // Format a 24-hour number to a 12-hour label like "10:00 AM"                                                                                                                               
+  const formatHour = (hour24) => {                                                                                                                                                            
+    const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12                                                                                                                                       
+    const meridiem = hour24 < 12 ? 'AM' : 'PM'                                                                                                                                                
+    return `${hour12.toString().padStart(2, '0')}:00 ${meridiem}`                                                                                                                             
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  // Parse a time string like "06:00 AM" or "11:00 PM" to a 24-hour number (6 or 23)                                                                                                          
+  const parseTime = (timeStr) => {                                                                                                                                                            
+    if (!timeStr) return null                                                                                                                                                                 
+    const [time, meridiem] = timeStr.split(' ')                                                                                                                                               
+    const [hh] = time.split(':').map(Number)                                                                                                                                                  
+    if (meridiem === 'PM' && hh !== 12) return hh + 12                                                                                                                                        
+    if (meridiem === 'AM' && hh === 12) return 0                                                                                                                                              
+    return hh                                                                                                                                                                                 
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  const formatDate = (date) =>                                                                                                                                                                
+    date.toLocaleDateString('en-IN', {                                                                                                                                                        
+      weekday: 'short',                                                                                                                                                                       
+      day: 'numeric',                                                                                                                                                                         
+      month: 'short',                                                                                                                                                                         
+      year: 'numeric',                                                                                                                                                                        
+    })                                                                                                                                                                                        
+                                                                                                                                                                                              
+  const Turfs = () => {                                                                                                                                                                       
+    const navigate = useNavigate()                                                                                                                                                            
+    const { id } = useParams()                                                                                                                                                                
+                                                                                                                                                                                              
+    // Turf data                                                                                                                                                                              
+    const [turf, setTurf] = useState(null)                                                                                                                                                    
+    const [isLoading, setIsLoading] = useState(true)                                                                                                                                          
+    const [error, setError] = useState(null)                                                                                                                                                  
+                                                                                                                                                                                              
+    // Booking state                                                                                                                                                                          
+    const [startDate, setStartDate] = useState(new Date())                                                                                                                                    
+    const [timingOpen, setTimingOpen] = useState(0)                                                                                                                                           
+    const [timingClose, setTimingClose] = useState(24)                                                                                                                                        
+    const [timingSlotArr, setTimingSlotArr] = useState([])                                                                                                                                    
+    const [dateSlotArr, setDateSlotArr] = useState([])                                                                                                                                        
+    const [slotsLoading, setSlotsLoading] = useState(false)                                                                                                                                   
+    const [discount, setDiscount] = useState(0)                                                                                                                                               
+                                                                                                                                                                                              
+    // Flow state                                                                                                                                                                             
+    const [isBook, setIsBook] = useState(false)                                                                                                                                               
+    const [showLoginModal, setShowLoginModal] = useState(false)                                                                                                                               
+                                                                                                                                                                                              
+    // Fetch turf details                                                                                                                                                                     
+    useEffect(() => {                                                                                                                                                                         
+      axios                                                                                                                                                                                   
+        .get(`${API_URL}/turfs/${id}`)                                                                                                                                                        
+        .then((response) => {                                                                                                                                                                 
+          setTurf(response.data || {})                                                                                                                                                        
+          const open = parseTime(response.data?.time_open)                                                                                                                                    
+          const close = parseTime(response.data?.time_close)                                                                                                                                  
+          setTimingOpen(open ?? 0)                                                                                                                                                            
+          setTimingClose(close ?? 24)                                                                                                                                                         
+          setIsLoading(false)                                                                                                                                                                 
+        })                                                                                                                                                                                    
+        .catch(() => {                                                                                                                                                                        
+          setError('Could not load this turf.')                                                                                                                                               
+          setIsLoading(false)                                                                                                                                                                 
+        })                                                                                                                                                                                    
+    }, [id])                                                                                                                                                                                  
+                                                                                                                                                                                              
+    // Fetch booked slots for the selected date                                                                                                                                               
+    const fetchBookedSlots = (date) => {                                                                                                                                                      
+      setSlotsLoading(true)                                                                                                                                                                   
+      const month =                                                                                                                                                                           
+        date.getMonth() + 1 < 10                                                                                                                                                              
+          ? `0${date.getMonth() + 1}`                                                                                                                                                         
+          : date.getMonth() + 1                                                                                                                                                               
+      const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()                                                                                                                 
+      const dateStr = `${date.getFullYear()}-${month}-${day}`                                                                                                                                 
+                                                                                                                                                                                              
+      axios                                                                                                                                                                                   
+        .get(`${API_URL}/booking/getbyturfid/${id}/${dateStr}`)                                                                                                                               
+        .then((response) => {                                                                                                                                                                 
+          // Aggregate slots across all bookings for that date (Set dedupes)                                                                                                                  
+          const allSlots = new Set()                                                                                                                                                          
+          ;(response.data || []).forEach((booking) => {                                                                                                                                       
+            ;(booking.slot || []).forEach((s) => allSlots.add(s))                                                                                                                             
+          })                                                                                                                                                                                  
+          setDateSlotArr([...allSlots])                                                                                                                                                       
+          setSlotsLoading(false)                                                                                                                                                              
+        })                                                                                                                                                                                    
+        .catch(() => {                                                                                                                                                                        
+          setDateSlotArr([])                                                                                                                                                                  
+          setSlotsLoading(false)                                                                                                                                                              
+        })                                                                                                                                                                                    
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    useEffect(() => {                                                                                                                                                                         
+      if (id) fetchBookedSlots(new Date())                                                                                                                                                    
+      // eslint-disable-next-line react-hooks/exhaustive-deps                                                                                                                                 
+    }, [id])                                                                                                                                                                                  
+                                                                                                                                                                                              
+    // Build the list of hour slots between open and close                                                                                                                                    
+    const allSlots = useMemo(() => {                                                                                                                                                          
+      const arr = []                                                                                                                                                                          
+      for (let h = timingOpen; h < timingClose; h++) {                                                                                                                                        
+        arr.push({ hour24: h, label: formatHour(h) })                                                                                                                                         
+      }                                                                                                                                                                                       
+      return arr                                                                                                                                                                              
+    }, [timingOpen, timingClose])                                                                                                                                                             
+                                                                                                                                                                                              
+    // Helpers                                                                                                                                                                                
+    const isSameDay = (a, b) =>                                                                                                                                                               
+      a.getDate() === b.getDate() &&                                                                                                                                                          
+      a.getMonth() === b.getMonth() &&                                                                                                                                                        
+      a.getFullYear() === b.getFullYear()                                                                                                                                                     
+                                                                                                                                                                                              
+    const isPast = (hour24) => {                                                                                                                                                              
+      if (!isSameDay(startDate, new Date())) return false                                                                                                                                     
+      return hour24 <= new Date().getHours()                                                                                                                                                  
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    const isBooked = (label) => dateSlotArr.includes(label)                                                                                                                                   
+    const isSelected = (label) => timingSlotArr.includes(label)                                                                                                                               
+                                                                                                                                                                                              
+    // Toggle slot selection                                                                                                                                                                  
+    const toggleSlot = (slot) => {                                                                                                                                                            
+      setTimingSlotArr((prev) =>                                                                                                                                                              
+        prev.includes(slot) ? prev.filter((s) => s !== slot) : [...prev, slot]                                                                                                                
+      )                                                                                                                                                                                       
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    // Date change                                                                                                                                                                            
+    const handleDateChange = (date) => {                                                                                                                                                      
+      setStartDate(date)                                                                                                                                                                      
+      setTimingSlotArr([])                                                                                                                                                                    
+      fetchBookedSlots(date)                                                                                                                                                                  
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    // Total amount (derived state — no setPrice mutation)                                                                                                                                    
+    const totalAmount = (turf?.price || 0) * timingSlotArr.length                                                                                                                             
+    const finalAmount = Math.max(0, totalAmount - discount)                                                                                                                                   
+                                                                                                                                                                                              
+    // Book flow                                                                                                                                                                              
+    const handleBookNow = () => {                                                                                                                                                             
+      if (!localStorage.getItem('user_access')) {                                                                                                                                             
+        setShowLoginModal(true)                                                                                                                                                               
+        return                                                                                                                                                                                
+      }                                                                                                                                                                                       
+      if (timingSlotArr.length === 0) return                                                                                                                                                  
+      setIsBook(true)                                                                                                                                                                         
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    const goToLogin = () => {                                                                                                                                                                 
+      setShowLoginModal(false)                                                                                                                                                                
+      navigate('/user/login')                                                                                                                                                                 
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    // Submit booking (25% advance flow)                                                                                                                                                      
+    const handleBook = (advance, full, remain) => {                                                                                                                                           
+      const turfData = {                                                                                                                                                                      
+        turf_id: id,                                                                                                                                                                          
+        date: startDate,                                                                                                                                                                      
+        slot: timingSlotArr,                                                                                                                                                                  
+        amount: full,                                                                                                                                                                         
+        advance_amount: advance,                                                                                                                                                              
+        remaining_amount: remain,                                                                                                                                                             
+      }                                                                                                                                                                                       
+      axios                                                                                                                                                                                   
+        .post(`${API_URL}/booking`, turfData, {                                                                                                                                               
+          headers: { Authorization: localStorage.getItem('user_access') },                                                                                                                    
+        })                                                                                                                                                                                    
+        .then(() => navigate('/user/myaccount'))                                                                                                                                              
+        .catch(() => alert('Booking failed. Please try again.'))                                                                                                                              
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    // Stripe payment flow                                                                                                                                                                    
+    const handleStripePayment = async (amount) => {                                                                                                                                           
+      try {                                                                                                                                                                                   
+        const response = await axios.post(                                                                                                                                                    
+          `${API_URL}/payment/create-checkout-session`,                                                                                                                                       
+          { amount }                                                                                                                                                                          
+        )                                                                                                                                                                                     
+        window.location.href = response.data.url                                                                                                                                              
+      } catch (err) {                                                                                                                                                                         
+        alert('Payment could not be started. Please try again.')                                                                                                                              
+      }                                                                                                                                                                                       
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    // ===== Render states =====                                                                                                                                                              
+                                                                                                                                                                                              
+    if (isLoading) {                                                                                                                                                                          
+      return (                                                                                                                                                                                
+        <main className="booking-page">                                                                                                                                                       
+          <div className="container">                                                                                                                                                         
+            <div className="booking-skeleton">                                                                                                                                                
+              <div                                                                                                                                                                            
+                className="skeleton"                                                                                                                                                          
+                style={{ height: 400, borderRadius: 12 }}                                                                                                                                     
+              ></div>                                                                                                                                                                         
+              <div className="skeleton" style={{ height: 24, width: '60%' }}></div>                                                                                                           
+              <div className="skeleton" style={{ height: 16, width: '40%' }}></div>                                                                                                           
+            </div>                                                                                                                                                                            
+          </div>                                                                                                                                                                              
+        </main>                                                                                                                                                                               
+      )                                                                                                                                                                                       
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    if (error) {                                                                                                                                                                              
+      return (                                                                                                                                                                                
+        <main className="booking-page">                                                                                                                                                       
+          <div className="container">                                                                                                                                                         
+            <div className="empty-state">                                                                                                                                                     
+              <div className="empty-state-icon">                                                                                                                                              
+                <i className="fa fa-exclamation-triangle"></i>                                                                                                                                
+              </div>                                                                                                                                                                          
+              <h3>Couldn't load this turf</h3>                                                                                                                                                
+              <p>{error}</p>                                                                                                                                                                  
+              <button                                                                                                                                                                         
+                onClick={() => window.location.reload()}                                                                                                                                      
+                className="btn btn-primary"                                                                                                                                                   
+              >                                                                                                                                                                               
+                Try again                                                                                                                                                                     
+              </button>                                                                                                                                                                       
+            </div>                                                                                                                                                                            
+          </div>                                                                                                                                                                              
+        </main>                                                                                                                                                                               
+      )                                                                                                                                                                                       
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    // Once user clicks Book, show Checkout                                                                                                                                                   
+    if (isBook) {                                                                                                                                                                             
+      return (                                                                                                                                                                                
+        <Checkout                                                                                                                                                                             
+          turf={turf}                                                                                                                                                                         
+          startDate={startDate}                                                                                                                                                               
+          timingSlotArr={timingSlotArr}                                                                                                                                                       
+          discount={discount}                                                                                                                                                                 
+          setDiscount={setDiscount}                                                                                                                                                           
+          handleBook={handleBook}                                                                                                                                                             
+          handleStripePayment={handleStripePayment}                                                                                                                                           
+          totalAmount={finalAmount}                                                                                                                                                           
+        />                                                                                                                                                                                    
+      )                                                                                                                                                                                       
+    }                                                                                                                                                                                         
+                                                                                                                                                                                              
+    const imageUrl = turf.image                                                                                                                                                               
+      ? `http://localhost:3000/turf_images/${turf.image}`                                                                                                                                     
+      : null                                                                                                                                                                                  
+                                                                                                                                                                                              
+    return (                                                                                                                                                                                  
+      <main className="booking-page">                                                                                                                                                         
+        <div className="container">                                                                                                                                                           
+          <div className="booking-grid">                                                                                                                                                      
+            {/* Left: turf details + map */}                                                                                                                                                  
+            <div>                                                                                                                                                                             
+              <div className="turf-detail-card">                                                                                                                                              
+                {imageUrl ? (                                                                                                                                                                 
+                  <div                                                                                                                                                                        
+                    className="turf-hero"                                                                                                                                                     
+                    style={{ backgroundImage: `url(${imageUrl})` }}                                                                                                                           
+                    role="img"                                                                                                                                                                
+                    aria-label={turf.name}                                                                                                                                                    
+                  >                                                                                                                                                                           
+                    <span className="turf-hero-badge">                                                                                                                                        
+                      <i className="fa fa-clock"></i>                                                                                                                                         
+                      {turf.time_open} – {turf.time_close}                                                                                                                                    
+                    </span>                                                                                                                                                                   
+                  </div>                                                                                                                                                                      
+                ) : (                                                                                                                                                                         
+                  <div className="turf-hero-fallback">                                                                                                                                        
+                    <i className="fa fa-futbol"></i>                                                                                                                                          
+                  </div>                                                                                                                                                                      
+                )}                                                                                                                                                                            
+                                                                                                                                                                                              
+                <div className="turf-body">                                                                                                                                                   
+                  <h1 className="turf-name">{turf.name}</h1>                                                                                                                                  
+                  <div className="turf-meta">                                                                                                                                                 
+                    {turf.address && (                                                                                                                                                        
+                      <span>                                                                                                                                                                  
+                        <i className="fa fa-location-dot"></i>                                                                                                                                
+                        {turf.address}                                                                                                                                                        
+                      </span>                                                                                                                                                                 
+                    )}                                                                                                                                                                        
+                    {turf.contact && (                                                                                                                                                        
+                      <span>                                                                                                                                                                  
+                        <i className="fa fa-phone"></i>                                                                                                                                       
+                        {turf.contact}                                                                                                                                                        
+                      </span>                                                                                                                                                                 
+                    )}                                                                                                                                                                        
+                  </div>                                                                                                                                                                      
+                                                                                                                                                                                              
+                  {turf.detail && (                                                                                                                                                           
+                    <p className="turf-description">{turf.detail}</p>                                                                                                                         
+                  )}                                                                                                                                                                          
+                                                                                                                                                                                              
+                  <div className="turf-features">                                                                                                                                             
+                    {turf.price ? (                                                                                                                                                           
+                      <span className="turf-feature-tag">                                                                                                                                     
+                        <i className="fa fa-indian-rupee-sign"></i>₹                                                                                                                          
+                        {turf.price}/hr                                                                                                                                                       
+                      </span>                                                                                                                                                                 
+                    ) : null}                                                                                                                                                                 
+                    {turf.time_open && turf.time_close ? (                                                                                                                                    
+                      <span className="turf-feature-tag">                                                                                                                                     
+                        <i className="fa fa-clock"></i>                                                                                                                                       
+                        {turf.time_open} – {turf.time_close}                                                                                                                                  
+                      </span>                                                                                                                                                                 
+                    ) : null}                                                                                                                                                                 
+                    <span className="turf-feature-tag">                                                                                                                                       
+                      <i className="fa fa-futbol"></i>Bookable online                                                                                                                         
+                    </span>                                                                                                                                                                   
+                  </div>                                                                                                                                                                      
+                </div>                                                                                                                                                                        
+              </div>                                                                                                                                                                          
+                                                                                                                                                                                              
+              <div className="turf-map">                                                                                                                                                      
+                <div className="turf-map-header">                                                                                                                                             
+                  <h3>                                                                                                                                                                        
+                    <i className="fa fa-map-location-dot"></i>Location                                                                                                                        
+                  </h3>                                                                                                                                                                       
+                </div>                                                                                                                                                                        
+                <GMap lat={turf.lat} long={turf.long} />                                                                                                                                      
+              </div>                                                                                                                                                                          
+            </div>                                                                                                                                                                            
+                                                                                                                                                                                              
+            {/* Right: sticky booking card */}                                                                                                                                                
+            <aside>                                                                                                                                                                           
+              <div className="booking-card">                                                                                                                                                  
+                <div className="booking-card-header">                                                                                                                                         
+                  <h2>Book your slot</h2>                                                                                                                                                     
+                  {turf.price ? (                                                                                                                                                             
+                    <div className="price">                                                                                                                                                   
+                      <strong>₹{turf.price}</strong> / hour                                                                                                                                   
+                    </div>                                                                                                                                                                    
+                  ) : null}                                                                                                                                                                   
+                </div>                                                                                                                                                                        
+                                                                                                                                                                                              
+                {/* Date picker */}                                                                                                                                                           
+                <div className="booking-section">                                                                                                                                             
+                  <label className="booking-section-label">Select date</label>                                                                                                                
+                  <div className="booking-datepicker">                                                                                                                                        
+                    <DatePicker                                                                                                                                                               
+                      selected={startDate}                                                                                                                                                    
+                      onChange={handleDateChange}                                                                                                                                             
+                      minDate={new Date()}                                                                                                                                                    
+                      dateFormat="dd MMM yyyy"                                                                                                                                                
+                      className="form-control"                                                                                                                                                
+                    />                                                                                                                                                                        
+                  </div>                                                                                                                                                                      
+                </div>                                                                                                                                                                        
+                                                                                                                                                                                              
+                {/* Time slots */}                                                                                                                                                            
+                <div className="booking-section">                                                                                                                                             
+                  <label className="booking-section-label">                                                                                                                                   
+                    Select time slot                                                                                                                                                          
+                    {isSameDay(startDate, new Date()) ? ' (today)' : ''}                                                                                                                      
+                  </label>                                                                                                                                                                    
+                                                                                                                                                                                              
+                  {slotsLoading ? (                                                                                                                                                           
+                    <div className="time-slots-skeleton">                                                                                                                                     
+                      {Array.from({ length: 6 }).map((_, i) => (                                                                                                                              
+                        <div                                                                                                                                                                  
+                          key={i}                                                                                                                                                             
+                          className="skeleton time-slot-skeleton"                                                                                                                             
+                        ></div>                                                                                                                                                               
+                      ))}                                                                                                                                                                     
+                    </div>                                                                                                                                                                    
+                  ) : allSlots.length === 0 ? (                                                                                                                                               
+                    <div className="no-slots">                                                                                                                                                
+                      <i className="fa fa-calendar-xmark"></i>                                                                                                                                
+                      <p className="mb-0 mt-2">                                                                                                                                               
+                        No slots available for the configured hours.                                                                                                                          
+                      </p>                                                                                                                                                                    
+                    </div>                                                                                                                                                                    
+                  ) : (                                                                                                                                                                       
+                    <div className="time-slots-grid">                                                                                                                                         
+                      {allSlots.map(({ hour24, label }) => {                                                                                                                                  
+                        const past = isPast(hour24)                                                                                                                                           
+                        const booked = isBooked(label)                                                                                                                                        
+                        const selected = isSelected(label)                                                                                                                                    
+                        const disabled = past || booked                                                                                                                                       
+                                                                                                                                                                                              
+                        return (                                                                                                                                                              
+                          <button                                                                                                                                                             
+                            key={hour24}                                                                                                                                                      
+                            type="button"                                                                                                                                                     
+                            className={`time-slot ${selected ? 'selected' : ''} ${                                                                                                            
+                              booked ? 'booked' : ''                                                                                                                                          
+                            } ${past ? 'past' : ''}`}                                                                                                                                         
+                            onClick={() => !disabled && toggleSlot(label)}                                                                                                                    
+                            disabled={disabled}                                                                                                                                               
+                            aria-pressed={selected}                                                                                                                                           
+                          >                                                                                                                                                                   
+                            <span>{label}</span>                                                                                                                                              
+                            {booked && (                                                                                                                                                      
+                              <span className="slot-label">Booked</span>                                                                                                                      
+                            )}                                                                                                                                                                
+                            {past && !booked && (                                                                                                                                             
+                              <span className="slot-label">Past</span>                                                                                                                        
+                            )}                                                                                                                                                                
+                          </button>                                                                                                                                                           
+                        )                                                                                                                                                                     
+                      })}                                                                                                                                                                     
+                    </div>                                                                                                                                                                    
+                  )}                                                                                                                                                                          
+                                                                                                                                                                                              
+                  <p className="booking-section-hint">                                                                                                                                        
+                    <i className="fa fa-circle-info me-1"></i>                                                                                                                                
+                    Tap multiple slots to book consecutive hours.                                                                                                                             
+                  </p>                                                                                                                                                                        
+                </div>                                                                                                                                                                        
+                                                                                                                                                                                              
+                {/* Price summary */}                                                                                                                                                         
+                {timingSlotArr.length > 0 && (                                                                                                                                                
+                  <div className="booking-section">                                                                                                                                           
+                    <div className="price-summary">                                                                                                                                           
+                      <div className="price-row">                                                                                                                                             
+                        <span className="label">                                                                                                                                              
+                          ₹{turf.price} × {timingSlotArr.length} hour                                                                                                                         
+                          {timingSlotArr.length > 1 ? 's' : ''}                                                                                                                               
+                        </span>                                                                                                                                                               
+                        <span className="value">                                                                                                                                              
+                          ₹{totalAmount.toLocaleString('en-IN')}                                                                                                                              
+                        </span>                                                                                                                                                               
+                      </div>                                                                                                                                                                  
+                      <div className="price-row total">                                                                                                                                       
+                        <span className="label">Total</span>                                                                                                                                  
+                        <span className="value">                                                                                                                                              
+                          ₹{totalAmount.toLocaleString('en-IN')}                                                                                                                              
+                        </span>                                                                                                                                                               
+                      </div>                                                                                                                                                                  
+                    </div>                                                                                                                                                                    
+                  </div>                                                                                                                                                                      
+                )}                                                                                                                                                                            
+                                                                                                                                                                                              
+                <button                                                                                                                                                                       
+                  onClick={handleBookNow}                                                                                                                                                     
+                  className="btn btn-success btn-block btn-lg"                                                                                                                                
+                  disabled={timingSlotArr.length === 0}                                                                                                                                       
+                >                                                                                                                                                                             
+                  {timingSlotArr.length === 0 ? (                                                                                                                                             
+                    'Select a time slot'                                                                                                                                                      
+                  ) : (                                                                                                                                                                       
+                    <>                                                                                                                                                                        
+                      <i className="fa fa-calendar-check me-2"></i>                                                                                                                           
+                      Continue to payment                                                                                                                                                     
+                    </>                                                                                                                                                                       
+                  )}                                                                                                                                                                          
+                </button>                                                                                                                                                                     
+              </div>                                                                                                                                                                          
+            </aside>                                                                                                                                                                          
+          </div>                                                                                                                                                                              
+        </div>                                                                                                                                                                                
+                                                                                                                                                                                              
+        {/* Login modal (custom, modern) */}                                                                                                                                                  
+        {showLoginModal && (                                                                                                                                                                  
+          <div                                                                                                                                                                                
+            className="login-modal-overlay"                                                                                                                                                   
+            onClick={() => setShowLoginModal(false)}                                                                                                                                          
+          >                                                                                                                                                                                   
+            <div                                                                                                                                                                              
+              className="login-modal"                                                                                                                                                         
+              onClick={(e) => e.stopPropagation()}                                                                                                                                            
+            >                                                                                                                                                                                 
+              <div className="login-modal-icon">                                                                                                                                              
+                <i className="fa fa-user-lock"></i>                                                                                                                                           
+              </div>                                                                                                                                                                          
+              <h3>Login to continue</h3>                                                                                                                                                      
+              <p>                                                                                                                                                                             
+                You need to be signed in to book a turf slot. It only takes a                                                                                                                 
+                moment.                                                                                                                                                                       
+              </p>                                                                                                                                                                            
+              <div className="login-modal-actions">                                                                                                                                           
+                <button                                                                                                                                                                       
+                  onClick={() => setShowLoginModal(false)}                                                                                                                                    
+                  className="btn btn-outline-secondary"                                                                                                                                       
+                >                                                                                                                                                                             
+                  Cancel                                                                                                                                                                      
+                </button>                                                                                                                                                                     
+                <button onClick={goToLogin} className="btn btn-primary">                                                                                                                      
+                  Sign in                                                                                                                                                                     
+                </button>                                                                                                                                                                     
+              </div>                                                                                                                                                                          
+            </div>                                                                                                                                                                            
+          </div>                                                                                                                                                                              
+        )}                                                                                                                                                                                    
+      </main>                                                                                                                                                                                 
+    )                                                                                                                                                                                         
+  }                                                                                                                                                                                           
+                                                                                                                                                                                              
+  export default Turfs  

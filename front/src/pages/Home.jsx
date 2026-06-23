@@ -110,7 +110,7 @@ const Home = () => {
                 className="text-center"
                 style={{ marginTop: "var(--space-6)" }}
               >
-                <Link to="/turfs" className="btn btn-outline-primary btn-lg">
+                <Link to="/turfs" className="btn btn-outline-success btn-lg">
                   <i className="fa fa-th-large me-2"></i>
                   Browse all turfs
                 </Link>

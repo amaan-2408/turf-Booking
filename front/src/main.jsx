@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './styles/modern.css'
 import './styles/auth.css'
 import './styles/dashboard.css'
+import './styles/booking.css'
 
 import App from './App.jsx'
 

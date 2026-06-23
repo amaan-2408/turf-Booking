@@ -6,12 +6,12 @@ const Features = () => {
       <div className="container-fluid feature bg-light py-5">
         <div className="container py-5">
           <div className="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style={{ maxWidth: '800px' }}>
-            <h4 className="text-uppercase text-primary">Our Feature</h4>
+            <h4 className="text-uppercase text-success">Our Feature</h4>
             <h1 className="display-3 text-capitalize mb-3">Game ON Turf: Find and Book Your Perfect turf</h1>
           </div>
           <div className="row g-4">
             <div className="col-md-6 col-lg-6 col-xl-3 wow fadeInUp" data-wow-delay="0.2s">
-              <div className="feature-item p-4">
+              <div className="feature-item p-4 ">
                 <div className="feature-icon mb-3"><i className="fas fa-user-clock text-white fa-3x"></i></div>
                 <b  className="h4 mb-3">Easy Booking</b>
                 <p className="mb-3">Browse availability and book your turf in a few clicks. Check real-time slots and secure your game</p>
