@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { STRIPE_SECRET_KEY } from "../config/Config";
+import { STRIPE_SECRET_KEY } from "../config/Config.js";
 
 const stripe = new Stripe(STRIPE_SECRET_KEY);
 
