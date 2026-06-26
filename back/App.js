@@ -7,6 +7,11 @@ import Upload from "express-fileupload";
 
 const app = express();
 
+// IMPORTANT: Stripe webhook must receive the RAW request body for signature
+// verification. Mount express.raw() for /webhook BEFORE any body parsers
+// that would consume the stream (express.json, express.urlencoded, etc.).
+app.use("/api/v1/payment/webhook", express.raw({ type: "application/json" }));
+
 // Static assets (uploaded turf images, etc.) served from the configured
 // upload dir. Sub-paths (e.g. /turf_images/foo.jpg) are preserved so the
 // frontend's `${IMAGE_BASE_URL}/turf_images/${name}` URLs work.
@@ -26,6 +31,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(AllRoutes);
+
+// Stripe webhook handler — must be a direct route (not behind AllRoutes)
+// because AllRoutes goes through express.json() which destroys the raw body.
+import { StripeWebhook } from "./controllers/PaymentController.js";
+app.post("/api/v1/payment/webhook", StripeWebhook);
 
 app.listen(PORT, () => {
   console.log("running on PORT", PORT);
