@@ -183,7 +183,15 @@
       try {
         const response = await axios.post(
           `${API_URL}/payment/create-checkout-session`,
-          { amount }
+          {
+            amount,
+            // Backend stashes these in Stripe session.metadata so the
+            // webhook + finalize fallback can create the Booking row.
+            turf_id: id,
+            date: startDate,
+            slot: timingSlotArr,
+          },
+          { headers: { Authorization: localStorage.getItem('user_access') } }
         )
         window.location.href = response.data.url
       } catch (err) {
