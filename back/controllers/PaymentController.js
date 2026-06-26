@@ -1,11 +1,26 @@
 import Stripe from "stripe";
-import { STRIPE_SECRET_KEY } from "../config/Config.js";
+import { STRIPE_SECRET_KEY, FRONTEND_URL } from "../config/Config.js";
 
-const stripe = new Stripe(STRIPE_SECRET_KEY);
+// Lazy Stripe singleton — only construct when a checkout is actually requested.
+// This lets the server boot and serve non-payment routes even if the Stripe
+// key isn't configured (useful in dev / when payments are out of scope).
+let _stripe = null;
+const getStripe = () => {
+  if (!_stripe) {
+    if (!STRIPE_SECRET_KEY) {
+      throw new Error(
+        "STRIPE_SECRET_KEY is not configured. Add it to back/.env to enable payments."
+      );
+    }
+    _stripe = new Stripe(STRIPE_SECRET_KEY);
+  }
+  return _stripe;
+};
 
 const CreateCheckoutSession = async (req, res) => {
   try {
     const { amount } = req.body;
+    const stripe = getStripe();
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -24,11 +39,11 @@ const CreateCheckoutSession = async (req, res) => {
         },
       ],
 
-      success_url:
-        "http://localhost:5174/payment-success",
+      // Stripe will redirect the user to these URLs after checkout. Build
+      // them from FRONTEND_URL so deploys don't need a code change.
+      success_url: `${FRONTEND_URL}/payment-success`,
 
-      cancel_url:
-        "http://localhost:5174/payment-cancel",
+      cancel_url: `${FRONTEND_URL}/payment-cancel`,
     });
 
     res.send({

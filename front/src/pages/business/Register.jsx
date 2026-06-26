@@ -1,8 +1,9 @@
-import { useState } from 'react'                                                                                                                                                            
-  import { NavLink, useNavigate, Link } from 'react-router-dom'                                                                                                                               
-  import { useFormik } from 'formik'                                                                                                                                                          
-  import axios from 'axios'                                                                                                                                                                   
-  import BusinessRegisterSchema from '../../schema/BusinessRegisterSchema'                                                                                                                    
+import { useState } from 'react'
+  import { NavLink, useNavigate, Link } from 'react-router-dom'
+  import { useFormik } from 'formik'
+  import axios from 'axios'
+  import BusinessRegisterSchema from '../../schema/BusinessRegisterSchema'
+  import { API_URL } from '../../config/Api';
                                                                                                                                                                                               
   // Returns 'weak' | 'medium' | 'strong' | '' based on password content.                                                                                                                     
   const getPasswordStrength = (password) => {                                                                                                                                                 
@@ -42,8 +43,8 @@ import { useState } from 'react'
         }                                                                                                                                                                                     
                                                                                                                                                                                               
         setIsLoading(true)                                                                                                                                                                    
-        axios                                                                                                                                                                                 
-          .post('http://localhost:3000/api/v1/business', formData)                                                                                                                            
+        axios
+          .post(`${API_URL}/business`, formData) 
           .then(() => {                                                                                                                                                                       
             navigate('/business/login', {                                                                                                                                                     
               state: { justRegistered: true },                                                                                                                                                

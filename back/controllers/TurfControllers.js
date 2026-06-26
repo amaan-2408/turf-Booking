@@ -2,6 +2,7 @@ import Turf from "../model/Turf.js";
 import jwt from "jsonwebtoken"
 import Path from "path"
 import uniqueString from 'unique-string';
+import { UPLOAD_DIR } from "../config/Config.js";
 
 let GetAllTurf = async (req, res) => {
   let result = await Turf.find().populate("businessId").exec();
@@ -26,7 +27,16 @@ const SaveAllTurf = async (req, res) => {
   let ext=arr[arr.length-1]
   let str=uniqueString();
   let newname=str+"."+ext;
-  let filepath=Path.resolve()+"/assets/turf_images/"+newname
+  // Write to <UPLOAD_DIR>/turf_images/<unique>.<ext> — UPLOAD_DIR defaults to
+  // "assets" (relative to cwd) in dev and should be an absolute path in
+  // production so files persist across deploys.
+  const fs = await import("fs");
+  const uploadRoot = Path.resolve(UPLOAD_DIR);
+  const turfImagesDir = `${uploadRoot}/turf_images`;
+  if (!fs.existsSync(turfImagesDir)) {
+    fs.mkdirSync(turfImagesDir, { recursive: true });
+  }
+  let filepath = `${turfImagesDir}/${newname}`;
   await image.mv(filepath)
   
   req.body.businessId = req.obj._id;

@@ -1,8 +1,9 @@
-import { useState } from 'react'                                                                                                                                                            
-  import { NavLink, useNavigate, Link } from 'react-router-dom'                                                                                                                               
-  import { useFormik } from 'formik'                                                                                                                                                          
-  import axios from 'axios'                                                                                                                                                                   
-  import SignupFrmSchema from '../../schema/UserSignupSchema'                                                                                                                                 
+import { useState } from 'react'
+  import { NavLink, useNavigate, Link } from 'react-router-dom'
+  import { useFormik } from 'formik'
+  import axios from 'axios'
+  import SignupFrmSchema from '../../schema/UserSignupSchema'
+  import { API_URL } from '../../config/Api';
                                                                                                                                                                                               
   // Returns 'weak' | 'medium' | 'strong' | '' based on password content.                                                                                                                     
   const getPasswordStrength = (password) => {                                                                                                                                                 
@@ -42,8 +43,8 @@ import { useState } from 'react'
         }                                                                                                                                                                                     
                                                                                                                                                                                               
         setIsLoading(true)                                                                                                                                                                    
-        axios                                                                                                                                                                                 
-          .post('http://localhost:3000/api/v1/user', FormData)                                                                                                                                
+        axios
+          .post(`${API_URL}/user`, FormData) 
           .then(() => {                                                                                                                                                                       
             navigate('/user/login', {                                                                                                                                                         
               state: { justSignedUp: true },                                                                                                                                                  

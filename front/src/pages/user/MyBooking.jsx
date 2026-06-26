@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from "../../config/Api";
+import { API_URL, IMAGE_BASE_URL } from "../../config/Api";
 
 const isUpcoming = (date) =>
   new Date(date) >= new Date(new Date().toDateString());
@@ -100,7 +100,7 @@ const MyBooking = () => {
                       <div
                         className="booking-item-thumb"
                         style={{
-                          backgroundImage: `url(http://localhost:3000/turf_images/${booking.turf_id.image})`,
+                          backgroundImage: `url(${IMAGE_BASE_URL}/turf_images/${booking.turf_id.image})`,
                         }}
                         role="img"
                         aria-label={booking.turf_id.name}

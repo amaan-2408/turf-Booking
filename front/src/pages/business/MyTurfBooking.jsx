@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from "../../config/Api";
+import { API_URL, IMAGE_BASE_URL } from "../../config/Api";
 
 const isUpcoming = (date) =>
   new Date(date) >= new Date(new Date().toDateString());
@@ -96,7 +96,7 @@ const MyTurfBooking = () => {
               {bookings.map((booking, index) => {
                 const status = isUpcoming(booking.date) ? "upcoming" : "past";
                 const imageUrl = booking.turf_id?.image
-                  ? `http://localhost:3000/turf_images/${booking.turf_id.image}`
+                  ? `${IMAGE_BASE_URL}/turf_images/${booking.turf_id.image}`
                   : null;
 
                 return (

@@ -1,8 +1,9 @@
-import { useState } from 'react'                                                                                                                                                            
-  import { NavLink, useNavigate, Link } from 'react-router-dom'                                                                                                                               
-  import { useFormik } from 'formik'                                                                                                                                                          
-  import axios from 'axios'                                                                                                                                                                   
-  import UserLoginSchema from '../../schema/UserLoginSchema'                                                                                                                                  
+import { useState } from 'react'
+  import { NavLink, useNavigate, Link } from 'react-router-dom'
+  import { useFormik } from 'formik'
+  import axios from 'axios'
+  import UserLoginSchema from '../../schema/UserLoginSchema'
+  import { API_URL } from '../../config/Api';
                                                                                                                                                                                               
   const Login = () => {                                                                                                                                                                       
     const navigate = useNavigate()                                                                                                                                                            
@@ -20,8 +21,8 @@ import { useState } from 'react'
         setErrMsg('')                                                                                                                                                                         
         setIsLoading(true)                                                                                                                                                                    
                                                                                                                                                                                               
-        axios                                                                                                                                                                                 
-          .post('http://localhost:3000/api/v1/user/auth', FormData)                                                                                                                           
+        axios
+          .post(`${API_URL}/user/auth`, FormData)
           .then((response) => {                                                                                                                                                               
             if (response.data.success === false) {                                                                                                                                            
               // Both errType 1 (no email) and errType 2 (wrong password) get                                                                                                                 

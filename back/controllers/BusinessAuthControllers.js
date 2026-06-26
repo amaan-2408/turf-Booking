@@ -1,6 +1,7 @@
 import Business from "../model/Business.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { JWT_KEY } from "../config/Config.js";
 
 let Auth = async (req, res) => {
   let { email, password } = req.body;
@@ -39,7 +40,10 @@ let Auth = async (req, res) => {
   }
 
   const businessObj = { _id: result[0]._id, email: result[0].email };
-  const token = jwt.sign(businessObj, "kuch bhi");
+  // Sign with the configured JWT_KEY (NEVER hardcode the secret) and set an
+  // expiry so leaked tokens have a bounded lifetime. IsLoggedIn.js verifies
+  // both signature + expiry on every protected request.
+  const token = jwt.sign(businessObj, JWT_KEY, { expiresIn: "7d" });
 
   return res.send({ success: true, token, name: result[0].name });
 };

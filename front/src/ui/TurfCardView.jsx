@@ -1,5 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import { IMAGE_BASE_URL } from '../config/Api'
 
 const TurfCardView = (props) => {
   return (
@@ -8,7 +9,7 @@ const TurfCardView = (props) => {
                 <div className="blog-item d-flex flex-column" style={{ height: '100%' }}>
                   <div className="blog-img" style={{ height: '300px' }}> {/* Set a fixed height for the image container */}
                     <img
-                      src={"http://localhost:3000/turf_images/"+props.item.image}
+                      src={`${IMAGE_BASE_URL}/turf_images/${props.item.image}`}
                       className="img-fluid rounded-top w-100"
                       alt=""
                       style={{ height: '100%', objectFit: 'cover' }} // Ensure the image fills the container
