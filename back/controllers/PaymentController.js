@@ -1,6 +1,7 @@
 import Stripe from "stripe";
+import { STRIPE_SECRET_KEY } from "../config/Config";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(STRIPE_SECRET_KEY);
 
 const CreateCheckoutSession = async (req, res) => {
   try {
