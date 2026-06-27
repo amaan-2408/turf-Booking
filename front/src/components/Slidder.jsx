@@ -135,18 +135,18 @@ const Slidder = () => {
                   {slide.secondaryCta.label}
                 </a> */}
                 <Link
-  to={slide.primaryCta.href}
-  className="btn btn-primary btn-lg"
->
-  {slide.primaryCta.label}
-</Link>
+                  to={slide.primaryCta.href}
+                  className="btn btn-primary btn-lg"
+                >
+                  {slide.primaryCta.label}
+                </Link>
 
-<Link
-  to={slide.secondaryCta.href}
-  className="btn btn-outline-light btn-lg"
->
-  {slide.secondaryCta.label}
-</Link>
+                <Link
+                  to={slide.secondaryCta.href}
+                  className="btn btn-outline-light btn-lg"
+                >
+                  {slide.secondaryCta.label}
+                </Link>
               </div>
             </Carousel.Caption>
           </Carousel.Item>
