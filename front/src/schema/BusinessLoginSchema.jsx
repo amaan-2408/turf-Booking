@@ -1,6 +1,6 @@
-import * as YUP from "yup";
+import * as Yup from "yup";
 
-const BusinessLoginSchema = YUP.object({
+const BusinessLoginSchema = Yup.object({
   email: Yup.string()
     .email("Please enter a valid email address")
     .required("A valid email address is required"),
