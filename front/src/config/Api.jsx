@@ -12,9 +12,10 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5050";
 
 // Endpoint root used for axios calls.
 //Prodcuction
-// const API_URL = `${API_BASE_URL}/api/v1`;
+ const API_URL = `${API_BASE_URL}/api/v1`;
+ 
 //test
-const API_URL = "http://localhost:5050/api/v1"
+// const API_URL = "http://localhost:5050/api/v1"
 
 // Base for files served by the backend's static middleware (turf images
 // live at <UPLOAD_DIR>/turf_images/<name> → served at /turf_images/<name>).
