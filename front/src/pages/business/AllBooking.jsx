@@ -18,7 +18,7 @@
                                                                                                                                                                                               
     useEffect(() => {                                                                                                                                                                         
       axios                                                                                                                                                                                   
-        .get(`${API_URL}/business/mybooking`, {                                                                                                                                               
+        .get(`${API_URL}/booking/mybooking`, {                                                                                                                                               
           headers: { Authorization: localStorage.getItem('business_access') },                                                                                                                
         })                                                                                                                                                                                    
         .then((response) => {                                                                                                                                                                 
