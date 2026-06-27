@@ -1,3 +1,4 @@
+import Turf from "../model/Turf.js";
 import Booking from "../model/Booking.js";
 
 let SaveBooking = async (req, res) => {
@@ -46,6 +47,31 @@ let GetAllBooking = async (req, res) => {
   );
   res.send(result);
 };
+const GetMyAllBookings = async (req, res) => {
+  const totalBookings = await Booking.find();
+
+  try {
+    const businessId = req.obj._id;
+
+    const turfs = await Turf.find({ businessId }).select("_id");
+
+    const turfIds = turfs.map((turf) => turf._id);
+    const bookings = await Booking.find({
+      turf_id: { $in: turfIds },
+    })
+      .populate("turf_id")
+      .populate("user_id");
+
+    res.send(bookings);
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).send({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
 let GetAllBookingByTurfId = async (req, res) => {
   let turfid = req.params.id;
@@ -61,4 +87,10 @@ let DeleteAllBooking = async (req, res) => {
   res.send("deleted");
 };
 
-export { SaveBooking, GetAllBooking, DeleteAllBooking, GetAllBookingByTurfId };
+export {
+  SaveBooking,
+  GetMyAllBookings,
+  GetAllBooking,
+  DeleteAllBooking,
+  GetAllBookingByTurfId,
+};
