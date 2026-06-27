@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Carousel } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 // Slide data — easy to add/edit without touching the JSX.
 // Add a new object here and the carousel grows automatically.
@@ -121,7 +122,7 @@ const Slidder = () => {
                 {slide.description}
               </p>
               <div className="d-flex flex-wrap gap-2">
-                <a
+                {/* <a
                   href={slide.primaryCta.href}
                   className="btn btn-primary btn-lg"
                 >
@@ -132,7 +133,20 @@ const Slidder = () => {
                   className="btn btn-outline-light btn-lg"
                 >
                   {slide.secondaryCta.label}
-                </a>
+                </a> */}
+                <Link
+  to={slide.primaryCta.href}
+  className="btn btn-primary btn-lg"
+>
+  {slide.primaryCta.label}
+</Link>
+
+<Link
+  to={slide.secondaryCta.href}
+  className="btn btn-outline-light btn-lg"
+>
+  {slide.secondaryCta.label}
+</Link>
               </div>
             </Carousel.Caption>
           </Carousel.Item>
